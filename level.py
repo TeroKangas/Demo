@@ -1,4 +1,13 @@
 import sqlite3
+# import os
+
+# Datenbank verbinden
+# db_path = 'game.db'
+# conn = sqlite3.connect(db_path)
+
+# Absoluten Pfad zur Datenbank anzeigen
+# absolute_path = os.path.abspath(db_path)
+# print(f"Datenbank gespeichert unter: {absolute_path}")
 
 
 class LevelSystem:
@@ -75,7 +84,7 @@ def setup_database(db_path):
 db_path = 'game.db'
 player_id = 1
 
-# Datenbank und Tabelle einrichtenl
+# Datenbank und Tabelle einrichten
 
 setup_database(db_path)
 
