@@ -29,13 +29,14 @@ cursor.execute('''
 # Tabelle für Quests erstellen
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS quest (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        user_id INTEGER NOT NULL,
         name TEXT NOT NULL,
-        difficulty INTEGER,  -- z.B. 1 (leicht), 2 (mittel), 3 (schwer)
-        due_date TEXT,       -- Datum als Text im Format YYYY-MM-DD
-        status TEXT,         -- Status: 'offen' oder 'erledigt'
-        xp_reward INTEGER,   -- XP für das Abschließen der Aufgabe
+        description TEXT,
+        difficulty TEXT NOT NULL,
+        start_date datetime NOT NULL,
+        due_date datetime NOT NULL,       -- Datum als Text im Format DD-MM-YYYY
+        status TEXT NOT NULL,         -- Status: 'open' oder 'completed'
         FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
     )
 ''')
