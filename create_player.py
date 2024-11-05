@@ -5,9 +5,8 @@ import datetime
 class Demo:
 
     def __init__(self):
-        self.db_path = r"C:\Users\kanga\OneDrive\Työpöytä\Schule Bad Mergentheim\Sperl\nicegui\Demo\my_database.db"
+        self.db_path = r"db\game.db"
         self.connection = sqlite3.connect(self.db_path)
-        self.create_table()
         self.playerName = ''
         self.experience = 0
         self.level = 1
@@ -16,21 +15,6 @@ class Demo:
         
         # Create a container for the window's content
         self.content = ui.column()
-
-    def create_table(self):
-        create_table_query = '''
-        CREATE TABLE IF NOT EXISTS spieler (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name VARCHAR(200),
-            beschreibung VARCHAR(200),
-            erstellt DATETIME,
-            bild BLOB,
-            level INT,
-            punkte INT
-        );
-        '''
-        self.connection.execute(create_table_query)
-        self.connection.commit()
     
     def insert_into_spieler(self):
         player_name = self.playerName
@@ -42,8 +26,8 @@ class Demo:
             ui.notification(f"Name length may not exceed 10 characters")
             return
         if player_name != "":
-            insert_query = 'INSERT INTO spieler (name, level, punkte, rasse, erstellt) VALUES (?, ?, ?, ?, ?)'
-            self.connection.execute(insert_query, (player_name, 1, 0, race, datetime.datetime.now()))
+            insert_query = 'INSERT INTO user (name, race, level, xp) VALUES (?, ?, ?, ?)'
+            self.connection.execute(insert_query, (player_name, race, 1, 0))
             self.connection.commit()
             self.players = self.fetch_all_players()  # Refresh the players list
             ui.notification(f"Player '{player_name}' created in the database!")
@@ -53,13 +37,13 @@ class Demo:
 
     def check_if_name_already_exists(self, name):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT COUNT(*) FROM spieler WHERE name = ?", (name,))
+        cursor.execute("SELECT COUNT(*) FROM user WHERE name = ?", (name,))
         count = cursor.fetchone()[0]
         return count > 0
 
     def fetch_all_players(self):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT id, name FROM spieler")
+        cursor.execute("SELECT id, name FROM user")
         return cursor.fetchall()
 
     def clear_window(self):
