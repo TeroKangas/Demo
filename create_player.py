@@ -2,9 +2,6 @@ from nicegui import ui
 import sqlite3
 import datetime
 
-from PIL import Image
-import io
-
 class Demo:
 
     def __init__(self):
