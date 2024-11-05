@@ -5,7 +5,7 @@ import hashlib
 class Demo:
 
     def __init__(self):
-        self.db_path = r"C:\Users\kanga\OneDrive\Työpöytä\Schule Bad Mergentheim\Sperl\nicegui\Demo\my_database.db"
+        self.db_path = r"C:\Users\kanga\OneDrive\Työpöytä\Schule Bad Mergentheim\Sperl\nicegui\Demo\db\game.db"
         self.connection = sqlite3.connect(self.db_path)
         self.text = ''
         self.players = self.fetch_all_players()
@@ -13,11 +13,11 @@ class Demo:
 
     def fetch_all_players(self):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT id, name FROM spieler")
+        cursor.execute("SELECT id, name FROM user")
         return cursor.fetchall()
 
     def update_player_name(self, player_id, new_name):
-        update_query = 'UPDATE spieler SET name = ? WHERE id = ?'
+        update_query = 'UPDATE user SET name = ? WHERE id = ?'
         self.connection.execute(update_query, (new_name, player_id))
         self.connection.commit()
         self.players = self.fetch_all_players()  # Refresh the players list
@@ -28,7 +28,7 @@ class Demo:
 
     def remove_from_spieler(self, player_id):
         ui.notification("Remove player now...")
-        remove_query = 'DELETE FROM spieler WHERE id = ?'
+        remove_query = 'DELETE FROM user WHERE id = ?'
         self.connection.execute(remove_query, (player_id,))  # Corrected parameter passing
         self.connection.commit()
         ui.notification("Removed! Fetching...")
