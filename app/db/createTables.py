@@ -16,11 +16,11 @@ cursor = conn.cursor()
 # Tabelle für User erstellen
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS user (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
         name TEXT NOT NULL,
         image_path TEXT,
-        race TEXT,
-        class TEXT,
+        race TEXT DEFAULT noRace,
+        class TEXT DEFAULT noClass,
         level INTEGER DEFAULT 1,
         xp INTEGER DEFAULT 0
     )
@@ -38,7 +38,7 @@ cursor.execute('''
         due_date datetime NOT NULL,       -- Datum als Text im Format DD-MM-YYYY HH-MM-SS
         status TEXT NOT NULL,         -- Status: 'open' oder 'completed'
         FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
-    )
+    )  
 ''')
 
 # Änderungen speichern und Verbindung schließen
