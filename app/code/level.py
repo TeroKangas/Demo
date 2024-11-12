@@ -2,7 +2,7 @@ import sqlite3
 # import os
 
 # Datenbank verbinden
-# db_path = 'game.db'
+db_path = r"C:\Users\lucie\PycharmProjects\Demo\app\db\db\game.db"
 # conn = sqlite3.connect(db_path)
 
 # Absoluten Pfad zur Datenbank anzeigen
@@ -61,43 +61,20 @@ class LevelSystem:
         self.conn.close()
 
 
-# SQLite Datenbank und Tabelle vorbereiten
-def setup_database(db_path):
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-
-    # Tabelle "player" erstellen, falls sie nicht existiert
-    cursor.execute('''CREATE TABLE IF NOT EXISTS player (
-                        id INTEGER PRIMARY KEY,
-                        name TEXT,
-                        level INTEGER DEFAULT 0,
-                        xp INTEGER DEFAULT 0
-                    )''')
-
-    # Beispielspieler hinzufügen, falls noch keiner existiert
-    cursor.execute("INSERT OR IGNORE INTO player (id, name, level, xp) VALUES (?, ?, ?, ?)", (1, 'Player1', 1, 0))
-    conn.commit()
-    conn.close()
-
-
 # Beispielhafte Verwendung:
-db_path = 'game.db'
-player_id = 1
-
-# Datenbank und Tabelle einrichten
-
-setup_database(db_path)
+#db_path = 'game.db'
+#player_id = 1
 
 # Levelsystem mit Verbindung zur Datenbank starten
-player = LevelSystem(db_path, player_id)
+#player = LevelSystem(db_path, player_id)
 
 # XP hinzufügen und speichern
-player.add_xp(2500)
-print(player.get_current_state())  # Gibt den aktuellen Status zurück
+#player.add_xp(2500)
+#print(player.get_current_state())  # Gibt den aktuellen Status zurück
 
 # Mehr XP hinzufügen
-player.add_xp(5000)
-print(player.get_current_state())
+#player.add_xp(5000)
+#print(player.get_current_state())
 
 # Verbindung zur Datenbank schließen
-player.close_connection()
+#player.close_connection()
