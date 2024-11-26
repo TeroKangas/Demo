@@ -1,10 +1,19 @@
-.flex-row {
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.flex-container {
     display: flex;
+    flex-wrap: wrap;
     width: 100%;
 }
 
-.flex-grow {
-    flex-grow: 1;
+.flex-item {
+    flex: 1 1 30%; /* Each item takes 30% of the width */
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .bg-red {
@@ -21,25 +30,4 @@
 
 .bg-yellow {
     background-color: yellow;
-}
-
-.bg-light-blue {
-    background-color: lightblue;
-}
-
-/* Example for specific percentage sizes */
-.size-10 {
-    flex: 1 1 10%; /* 10% width */
-}
-
-.size-20 {
-    flex: 1 1 20%; /* 20% width */
-}
-
-.size-30 {
-    flex: 1 1 30%; /* 30% width */
-}
-
-.size-40 {
-    flex: 1 1 40%; /* 40% width */
 }
