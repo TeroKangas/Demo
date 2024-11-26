@@ -14,7 +14,7 @@ function openOrFocusTab(url) {
     }
 }
 '''
-
+#
 # Inject the JavaScript function directly into the head
 ui.add_head_html(f'''
     <script>{js_code}</script>
