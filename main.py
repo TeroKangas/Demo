@@ -1,10 +1,9 @@
 # hiermit wird die Applikation gestartet
-import app.code.quest 
-
 from nicegui import ui
 import os
 import time
 from datetime import datetime, timedelta
+from app.utils import create_quest
 
 # JavaScript function to open or focus a tab
 js_code = '''
@@ -20,7 +19,12 @@ function openOrFocusTab(url) {
     }
 }
 '''
-#
+
+from datetime import datetime
+import os
+
+
+
 # Inject the JavaScript function directly into the head
 ui.add_head_html(f'''
     <script>{js_code}</script>
@@ -32,12 +36,6 @@ def other_page():
 
 @ui.page('/quest_page')
 def quest_page():
-    db_dir = 'db'
-    db_path = os.path.join(db_dir, 'game.db')
-
-    # Assuming `QuestManager` is defined in `app.code.quest`
-    instance = app.code.quest.QuestManager(db_path, 1)
-
     ui.label('Create quest:')
     
     ui.label('Title:')
@@ -48,8 +46,7 @@ def quest_page():
 
     ui.label('Select Difficulty:')
     difficulty_select = ui.select(
-        options=['Easy', 'Normal', 'Hard'],
-        value='Normal'
+        options=['Easy', 'Normal', 'Hard']
     )
 
     # Calendar inputs for start_date and due_date
@@ -63,28 +60,18 @@ def quest_page():
         value=(datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')  # Default to one week from now
     )
 
-    def create_quest():
-        # Retrieve values from input fields
-        name = name_input.value
-        description = description_input.value
-        difficulty = difficulty_select.value
-
-        # Convert selected dates to UNIX timestamps
-        start_date = int(datetime.strptime(start_date_picker.value, '%Y-%m-%d').timestamp())
-        due_date = int(datetime.strptime(due_date_picker.value, '%Y-%m-%d').timestamp())
-
-        # Call the instance method
-        instance.createQuest(
-            name=name,
-            description=description,
-            difficulty=difficulty,
-            start_date=start_date,
-            due_date=due_date
+    ui.button(
+    'Create Quest', 
+    on_click=lambda: ui.notify(
+        create_quest(
+            name_input.value, 
+            description_input.value, 
+            difficulty_select.value, 
+            start_date_picker.value, 
+            due_date_picker.value
         )
-        ui.notify(f'Quest "{name}" created successfully!')
-
-    ui.button('Create Quest', on_click=create_quest)
-
+    )
+)
 
 
 # Buttons to open or focus on the other tabs
@@ -96,3 +83,5 @@ ui.label('Welcome to the Home Page!')
 
 # Run the app
 ui.run()
+
+
