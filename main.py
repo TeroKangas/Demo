@@ -34,7 +34,7 @@ ui.add_head_html(f'''
 def other_page():
     ui.label('Welcome to the other side')
 
-@ui.page('/quest_page')
+@ui.page('/create_quest_page')
 def quest_page():
     ui.label('Create quest:')
     
@@ -76,7 +76,7 @@ def quest_page():
 
 # Buttons to open or focus on the other tabs
 ui.button('Some other page', on_click=lambda: ui.run_javascript('openOrFocusTab("/other_page")'))
-ui.button('Quest page', on_click=lambda: ui.run_javascript('openOrFocusTab("/quest_page")'))
+ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_quest_page")'))
 
 # Keep the main page content
 ui.label('Welcome to the Home Page!')
