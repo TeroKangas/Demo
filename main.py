@@ -107,11 +107,18 @@ def see_quests_page():
         delete_button = ui.button("Delete",
             on_click=lambda: delete_quest(abc, quest[0], delete_button))
         
+@ui.page('/user_creation')
+def user_creation():
+    ui.label('Welcome to user creation')
+
+
 
 # Buttons to open or focus on the other tabs
 ui.button('Some other page', on_click=lambda: ui.run_javascript('openOrFocusTab("/other_page")'))
 ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_quest_page")'))
 ui.button('See quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_quests_page")'))
+ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/user_creation")'))
+
 
 # Keep the main page content
 ui.label('Welcome to the Home Page!')
