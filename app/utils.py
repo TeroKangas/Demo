@@ -32,3 +32,11 @@ def create_quest(name: str, description: str, difficulty: str, startDate: str, e
     
     return f'Quest "{name}" created successfully!'
 
+def getAllOpenQuests():
+    quests = obj.getOpenQuests()
+    return quests
+
+def deleteQuest(id: int):
+    obj.deleteQuest(id)
+    return 0
+
