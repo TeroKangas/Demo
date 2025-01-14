@@ -48,7 +48,7 @@ def completeQuest(id: int):
     obj.completeQuest(id)
     return 0
 
-def editQuest(id: int, name: str, desc: str, diff: str, start_date: datetime, due_date: datetime):
+def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
     obj.editQuest(id, name, desc, diff, start_date, due_date)
     return 0
 
