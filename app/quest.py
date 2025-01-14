@@ -61,6 +61,21 @@ class QuestManager:
         overdue = self.cursor.fetchall()
         print(f"{len(overdue)} überfällige Quests gefunden.")
         return overdue
+    
+    def editQuest(self, quest_id = None, name = None, description = None, difficulty = None, start_date = None, due_date = None):
+        """Bearbeitet eine bestehende Quest."""
+
+        if quest_id == 0:
+            return
+
+        self.cursor.execute('''
+            UPDATE quest
+            SET name = ?, description = ?, difficulty = ?, start_date = ?, due_date = ?       
+            WHERE id = ?
+        ''', (name, description, difficulty, start_date, due_date, quest_id))
+
+        self.conn.commit()
+        print(f"Quest '{name}' wurde edited.")
 
     def closeonnection(self):
         """Schließt die Verbindung zur Datenbank."""
