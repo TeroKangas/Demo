@@ -16,20 +16,42 @@ class UserManager:
         ''', (name, image_path, race, clas, level, xp))
         self.conn.commit()
         print(f"User '{name}' wurde erstellt.")
+    
+    def updateUser(self, id, name=None, image_path=None, race=None, clas=None):    
+        set_clause = []
+        params = []
+        
+        if name is not None:
+            set_clause.append("name = ?")
+            params.append(name)
+        
+        if image_path is not None:
+            set_clause.append("image_path = ?")
+            params.append(image_path)
+        
+        if race is not None:
+            set_clause.append("race = ?")
+            params.append(race)
+        
+        if clas is not None:
+            set_clause.append("clas = ?")
+            params.append(clas)
 
-    def updateUser(self, id, name, image_path, race, clas):
-        """Aktualisiert alle Felder eines Benutzers."""
-        self.cursor.execute('''
-            UPDATE user 
-            SET name = ?, image_path = ?, race = ?, clas = ?
-            WHERE id = ?
-        ''', (name, image_path, race, clas, id))
+        if not set_clause:
+            print(f"Keine Änderungen für User mit ID {id} vorgenommen.")
+            return
+        
+        params.append(id)
+        
+        sql_query = f"UPDATE user SET {', '.join(set_clause)} WHERE id = ?"
+        
+        self.cursor.execute(sql_query, tuple(params))
         
         if self.cursor.rowcount > 0:
             self.conn.commit()
             print(f"User mit ID {id} wurde aktualisiert.")
         else:
-            print(f"User mit ID {id} nicht gefunden.")
+            print(f"User mit ID {id} nicht gefunden oder keine Änderungen vorgenommen.")
 
     def getAllUser(self):
         """Ruft alle Benutzer ab."""
