@@ -20,7 +20,7 @@ cursor.execute('''
         name TEXT NOT NULL,
         image_path TEXT,
         race TEXT DEFAULT noRace,
-        class TEXT DEFAULT noClass,
+        clas TEXT DEFAULT noClass,
         level INTEGER DEFAULT 1,
         xp INTEGER DEFAULT 0
     )
