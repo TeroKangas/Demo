@@ -1,3 +1,4 @@
+
 #some utils
 
 import os
@@ -36,7 +37,18 @@ def getAllOpenQuests():
     quests = obj.getOpenQuests()
     return quests
 
+def getAllQuests():
+    quests = obj.getAllQuests()
+    return quests
+
 def deleteQuest(id: int):
     obj.deleteQuest(id)
     return 0
 
+def completeQuest(id: int):
+    obj.completeQuest(id)
+    return 0
+
+def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
+    obj.editQuest(id, name, desc, diff, start_date, due_date)
+    return 0
