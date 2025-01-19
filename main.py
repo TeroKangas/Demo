@@ -1,10 +1,8 @@
 
 # hiermit wird die Applikation gestartet
-from nicegui import ui
-		 
-		   
+from nicegui import ui		   
 from datetime import datetime, timedelta
-from app.utils import create_quest, getAllQuests, deleteQuest, completeQuest, editQuest
+from app.utils import create_quest, getAllQuests, deleteQuest, completeQuest, editQuest, create_user, update_user, get_all_user, delete_user
 
 # Define a JavaScript function to detect tab closure
 js_code = '''
@@ -29,10 +27,6 @@ function openOrFocusTab(url) {
 }
 
 '''
-
-							 
-
-
 
 
 # Inject the JavaScript function directly into the head
@@ -214,10 +208,42 @@ def see_quests_page():
         )
         ui.label(newtext)
 
-@ui.page('/user_creation')
-def user_creation():
-    ui.label('Welcome to user creation')										   
-																		
+@ui.page('/create_user')
+def create_user():
+    ui.label('Create user:')
+    
+    ui.label('Name:')
+    name_input = ui.input('Enter username here') 
+
+    ui.label('select image here:')
+    image_path_input = ui.input('Enter image here !!!DAS WIRD SPÄTER NOCH GEÄNDERT!!!')
+
+    ui.label('Select Race:')
+    race_input = ui.select(
+        options=['Human', 'Elf', 'Gnome']
+    )
+
+    ui.label('Select Class:')
+    clas_input = ui.select(
+        options=['Knight', 'Healer', 'Fighter']
+    )
+
+    level_input = 1
+    xp_input = 0
+
+    ui.button(
+    'Create User', 
+    on_click=lambda: ui.notify(
+        create_user(
+            name_input.value, 
+            image_path_input.value, 
+            race_input.value, 
+            clas_input.value, 
+            level_input,
+            xp_input
+        )
+    )
+)																		
         
 						  
 					
@@ -229,7 +255,7 @@ def user_creation():
 																								 
 ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_quest_page")'))
 ui.button('Edit quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
-ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/user_creation")'))
+ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_user")'))
 																					  
 
 
