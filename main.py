@@ -243,9 +243,64 @@ def create_user():
             xp_input
         )
     )
-)																		
-        
-						  
+)
+
+@ui.page('/edit_user')
+def edit_page():
+    ui.label('Your users:')
+    ButtonManager.buttons_showed = False
+
+    users = get_all_user()
+    user_options = []
+    user_options_menu = []
+
+    for user in users:
+        user_options.append(user)
+        user_id = user[0]
+        user_options_menu.append(user_id)
+
+    user_id = ui.select(
+        options=user_options_menu,
+        on_change=lambda e: on_select_change(user_id.value, ButtonManager.buttons_showed)
+    ) 
+
+    ui.label('Name:')
+    name_input = ui.input() 
+    
+    ui.label('Image Path:')
+    image_path_input = ui.input() 
+
+    ui.label('Race:')
+	race_input = ui.select(
+        options=['Human', 'Elf', 'Gnome']
+    )
+    ui.label('Class:')
+    clas_input = ui.select(
+        options=['Knight', 'Healer', 'Fighter']
+    )	
+								
+    def on_select_change(selected_value, buttonbool: bool):
+        selected_user = next((user for user in user_options if user[0] == selected_value), None)
+        user_id = selected_user[0]
+        current_id = selected_user[0]
+        name_input.value = selected_user[1]
+        image_path_input.value = selected_user[2] if selected_user[2] else ""
+        race_input.value = selected_user[3] if selected_user[3] else "noRace"
+        clas_input.value = selected_user[4] if selected_user[4] else "noClass"								  
+
+        global btn_edit
+        global btn_delete
+
+        if not ButtonManager.buttons_showed:
+            btn_edit = ui.button("Save changes", on_click=lambda: update_user(
+                selected_user[0], name_input.value, image_path_input.value, race_input.value, 
+                clas_input.value
+            ))
+            btn_delete = ui.button("Delete", on_click=lambda: delete_user(
+                selected_user[0], name_input.value, image_path_input.value, race_input.value, 
+                clas_input.value
+            ))
+            ButtonManager.buttons_showed = True					  
 					
 										
 
@@ -256,6 +311,7 @@ def create_user():
 ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_quest_page")'))
 ui.button('Edit quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
 ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_user")'))
+ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_user")'))
 																					  
 
 
