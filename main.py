@@ -208,8 +208,8 @@ def see_quests_page():
         )
         ui.label(newtext)
 
-@ui.page('/create_user')
-def create_user():
+@ui.page('/create_user_page')
+def create_user_page():
     ui.label('Create user:')
     
     ui.label('Name:')
@@ -271,9 +271,10 @@ def edit_page():
     image_path_input = ui.input() 
 
     ui.label('Race:')
-	race_input = ui.select(
+    race_input = ui.select(
         options=['Human', 'Elf', 'Gnome']
     )
+
     ui.label('Class:')
     clas_input = ui.select(
         options=['Knight', 'Healer', 'Fighter']
@@ -310,8 +311,8 @@ def edit_page():
 																								 
 ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_quest_page")'))
 ui.button('Edit quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
-ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_user")'))
-ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_user")'))
+ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_user_page")'))
+ui.button('Edit User', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_user")'))
 																					  
 
 
