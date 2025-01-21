@@ -8,12 +8,12 @@ class UserManager:
         self.cursor = self.conn.cursor()
         self.user_id = user_id
 
-    def createUser(self, name, image_path, race, clas, level, xp):
+    def createUser(self, name, image_path, race, clas, level, xp, is_active):
         """Erstellt einen neuen user"""
         self.cursor.execute('''
-            INSERT INTO user (name, image_path, race, clas, level, xp)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (name, image_path, race, clas, level, xp))
+            INSERT INTO user (name, image_path, race, clas, level, xp, is_active)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (name, image_path, race, clas, level, xp, is_active))
         self.conn.commit()
         print(f"User '{name}' wurde erstellt.")
     
@@ -68,6 +68,38 @@ class UserManager:
             print(f"User mit ID {id} wurde gelöscht.")
         else:
             print(f"User mit ID {id} nicht gefunden oder ein sonstiger Fehler trat auf.")
+
+    def activateUser(self, id: int):
+        msg_string: str
+
+        self.cursor.execute("UPDATE user SET is_active = 1 WHERE id = ?", (id,))
+        if self.cursor.rowcount > 0:
+            self.conn.commit()
+            msg_string = f"User ID{id} is active. "
+        else:
+            return (f"User activation failed.")
+
+        self.cursor.execute("UPDATE user SET is_active = 0 WHERE id <> ?", (id,))
+        if self.cursor.rowcount > 0:
+            self.conn.commit()
+            msg_string = msg_string + "Others than user ID{id} are inactivated."
+        else:
+            return(f"Users inactivation failed.")
+        
+        return msg_string
+    
+    def changePlayer(self, name: str):
+        self.cursor.execute("UPDATE user SET is_active = 1 WHERE name = ?", (name,))
+        if self.cursor.rowcount > 0:
+            self.conn.commit()
+        else:
+            return
+
+        self.cursor.execute("UPDATE user SET is_active = 0 WHERE name <> ?", (name,))
+        if self.cursor.rowcount > 0:
+            self.conn.commit()
+        else:
+            return
 
 
 

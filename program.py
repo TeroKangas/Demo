@@ -1,10 +1,7 @@
 from nicegui import ui
 from datetime import datetime, timedelta
-from app.utils import create_quest, getAllOpenQuests, deleteQuest, completeQuest, editQuest, getAllCompletedQuests
-from app.utils import create_quest, getAllQuests, deleteQuest, completeQuest, editQuest, create_user, update_user, get_all_user, delete_user
-from app.utils import create_quest, getAllQuests, deleteQuest, completeQuest, editQuest
+from app.utils import create_quest, getAllCompletedQuests, deleteQuest, completeQuest, editQuest, create_user, update_user, get_all_user, delete_user, changePlayer, getAllOpenQuests
 from app.db.createTables import create_tables_if_needed
-
 
 js_code = '''
 function openOrFocusTab(url) {
@@ -33,24 +30,38 @@ ui.add_head_html(f'''
 ''')
 
 #global variables
-buttons_showed: bool = False
+#buttons_showed_open_quests: bool = False
+player_label = None
 
 create_tables_if_needed()
 
 class ButtonManager:
     def __init__(self):
-        self._buttons_showed = False
+        self._buttons_showed_open_quests = False
+        self._buttons_showed_player_cockpit = False
+        self.player_label: str
 
     @property
     def buttons_showed(self):
-        return self._buttons_showed
+        return self._buttons_showed_open_quests
 
     @buttons_showed.setter
     def buttons_showed(self, value):
         if isinstance(value, bool):
-            self._buttons_showed = value
+            self._buttons_showed_open_quests = value
         else:
             raise ValueError("buttons_showed must be a boolean value")
+        
+    @property
+    def buttons_showed_player_cockpit(self):
+        return self._buttons_showed_player_cockpit
+
+    @buttons_showed.setter
+    def buttons_showed_player_cockpit(self, value):
+        if isinstance(value, bool):
+            self._buttons_showed_player_cockpit = value
+        else:
+            raise ValueError("_buttons_showed_player_cockpit must be a boolean value")
 
 def edit_quest(id: int, name: str, desc: str, diff: str, start_date, due_date):
     if id is not None and id > 0:
@@ -75,6 +86,11 @@ def complete_quest(id: int):
         btn_edit.enabled = False
         btn_delete.enabled = False
         btn_complete.enabled = False
+
+def change_user(name: str):
+    if name != '':
+        changePlayer(name)
+        ui.notify('Player changed')
 
 @ui.page('/create_quest_page')
 def quest_page():
@@ -294,9 +310,49 @@ def edit_page():
             )))
             ButtonManager.buttons_showed = True
 
-@ui.page('/see_users_page')
+@ui.page('/users_cockpit')
 def see_users_page():
     ui.label('Change user:')
+
+    ButtonManager.buttons_showed_player_cockpit = False
+
+    users = get_all_user()
+    user_options = []
+    user_options_menu = []
+
+    for user in users:
+        user_options.append(user)
+        user_name = user[1]
+        user_options_menu.append(user_name)
+
+    def handle_user_change(name: str):
+        change_user(name)
+        label_container.clear()
+        with label_container:
+            ui.label(show_player())        
+
+    def on_select_change(event):
+        global user_name
+        user_name = event.value
+
+        selected_player = next((user for user in user_options if user[1] == user_name), None)
+
+        global btn_change_player
+        if not ButtonManager.buttons_showed_player_cockpit:
+            btn_change_player = ui.button("Save change", on_click=lambda: handle_user_change(selected_player[1]))
+            ButtonManager.buttons_showed_player_cockpit = True
+
+        if ButtonManager.buttons_showed_player_cockpit:
+            btn_change_player.enabled = True
+
+        label_container.clear()
+        with label_container:
+            ui.label(show_player())
+    
+    ui.select(
+        options=user_options_menu,
+        on_change=on_select_change
+    )
 
     ui.label('Here are your users:')
     users = get_all_user()
@@ -309,6 +365,7 @@ def see_users_page():
         user_clas = user[4]
         user_level = user[5]
         user_xp = user[6]
+        user_active = user[7]
 
         newtext = (
             f"""
@@ -319,6 +376,7 @@ def see_users_page():
         clas: {user_clas},
         level: {user_level}
         xp: {user_xp},
+        active: {user_active},
         """
         )
         ui.label(newtext)
@@ -327,19 +385,25 @@ def show_player():
     users = get_all_user()
     if len(users) == 0:
         return "Player: not selected"
-    else:
-        name = users[0][1]
-        level = users[0][5]
-        return f"Player name: {name} | Level: {level}"
+    else:  
+        for user in users:
+            abc = user
+            if abc[7] == 1: #if user is active
+                name = abc[1]
+                level = abc[5]
+                return f"Player name: {name} | Level: {level}"
 
-ui.label(show_player())
+    return "No user is activated"
+
+with ui.row() as label_container:
+    player_label = ui.label(show_player())
 # Buttons to open or focus on the other tabs
 ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_quest_page")'))
 ui.button('Open quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
 ui.button('Closed quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_closed_quests_page")'))
 ui.button('Create user', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_user_page")'))
 #ui.button('Edit User', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_user")'))
-ui.button('User info', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_users_page")'))
+ui.button('Users cockpit', on_click=lambda: ui.run_javascript('openOrFocusTab("/users_cockpit")'))
 
 # Run the app
 ui.run()
