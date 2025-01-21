@@ -1,5 +1,6 @@
+
 # hiermit wird die Applikation gestartet
-from nicegui import ui
+from nicegui import ui		   
 from datetime import datetime, timedelta
 from app.utils import create_quest, getAllQuests, deleteQuest, completeQuest, editQuest, create_user, update_user, get_all_user, delete_user
 from app.utils import create_quest, getAllQuests, deleteQuest, completeQuest, editQuest
@@ -65,7 +66,7 @@ def edit_quest(id: int, name: str, desc: str, diff: str, start_date, due_date):
     if id is not None and id > 0:
         editQuest(id, name, desc, diff, start_date, due_date)
         ui.notify('Quest {id} edited')
-
+    
 def delete_quest(id: int):
     if quest_id != 0:
         deleteQuest(id)
@@ -137,7 +138,7 @@ def edit_page():
     quest_id = ui.select(
         options=quest_options_menu,
         on_change=lambda e: on_select_change(quest_id.value, buttons_showed)
-    )
+    ) 
 
     ui.label('Title:')
     name_input = ui.input()
@@ -153,7 +154,7 @@ def edit_page():
     # Calendar inputs for start_date and due_date
     ui.label('Select Start Date:')
     start_date_picker = ui.date()
-
+    
     ui.label('Select Due Date:')
     due_date_picker = ui.date()
 
@@ -264,7 +265,7 @@ def edit_page():
 @ui.page('/see_quests_page')
 def see_quests_page():
     ui.label('Here are your quests:')
-    quests = getAllOpenQuests()
+    quests = getAllQuests()
 
     for quest in quests:
         quest_description = quest[3]
@@ -282,8 +283,8 @@ def see_quests_page():
         )
         ui.label(newtext)
 
-@ui.page('/create_user')
-def create_user():
+@ui.page('/create_user_page')
+def create_user_page():
     ui.label('Create user:')
 
     ui.label('Name:')
@@ -306,19 +307,105 @@ def create_user():
     xp_input = 0
 
     ui.button(
-    'Create User',
+    'Create User', 
     on_click=lambda: ui.notify(
         create_user(
-            name_input.value,
-            image_path_input.value,
-            race_input.value,
-            clas_input.value,
+            name_input.value, 
+            image_path_input.value, 
+            race_input.value, 
+            clas_input.value, 
             level_input,
             xp_input
         )
     )
 )
-        
+
+@ui.page('/edit_user')
+def edit_page():
+    ui.label('Your users:')
+    ButtonManager.buttons_showed = False
+
+    users = get_all_user()
+    user_options = []
+    user_options_menu = []
+
+    for user in users:
+        user_options.append(user)
+        user_id = user[0]
+        user_options_menu.append(user_id)
+
+    user_id = ui.select(
+        options=user_options_menu,
+        on_change=lambda e: on_select_change(user_id.value, ButtonManager.buttons_showed)
+    )
+
+    ui.label('Name:')
+    name_input = ui.input()
+
+    ui.label('Image Path:')
+    image_path_input = ui.input()
+
+    ui.label('Race:')
+    race_input = ui.select(
+        options=['Human', 'Elf', 'Gnome']
+    )
+
+    ui.label('Class:')
+    clas_input = ui.select(
+        options=['Knight', 'Healer', 'Fighter']
+    )
+
+    def on_select_change(selected_value, buttonbool: bool):
+        selected_user = next((user for user in user_options if user[0] == selected_value), None)
+        user_id = selected_user[0]
+        current_id = selected_user[0]
+        name_input.value = selected_user[1]
+        image_path_input.value = selected_user[2] if selected_user[2] else ""
+        race_input.value = selected_user[3] if selected_user[3] else "noRace"
+        clas_input.value = selected_user[4] if selected_user[4] else "noClass"
+
+        global btn_edit
+        global btn_delete
+
+        if not ButtonManager.buttons_showed:
+            btn_edit = ui.button("Save changes", on_click=lambda: ui.notify(update_user(
+                selected_user[0], name_input.value, image_path_input.value, race_input.value,
+                clas_input.value
+            )))
+            btn_delete = ui.button("Delete", on_click=lambda: ui.notify(delete_user(
+                selected_user[0]
+            )))
+            ButtonManager.buttons_showed = True
+
+@ui.page('/see_users_page')
+def see_users_page():
+    ui.label('Here are your users:')
+    users = get_all_user()
+
+    for user in users:
+        user_id = user[0]
+        user_name = user[1]
+        user_image_path = user[2]
+        user_race = user[3]
+        user_clas = user[4]
+        user_level = user[5]
+        user_xp = user[6]
+
+        newtext = (
+            f"""
+        id: {user_id},
+        name: {user_name},
+        image_path: {user_image_path}, 
+        race: {user_race}, 
+        clas: {user_clas},
+        level: {user_level}
+        xp: {user_xp},
+        """
+        )
+        ui.label(newtext)
+
+
+
 
 # Buttons to open or focus on the other tabs
 ui.button('Some other page', on_click=lambda: ui.run_javascript('openOrFocusTab("/other_page")'))
@@ -326,12 +413,16 @@ ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/c
 ui.button('Edit quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
 ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_user")'))
 
+ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_user_page")'))
+ui.button('Edit User', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_user")'))
+ui.button('See User', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_users_page")'))
+
 
 ui.button('See quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_quests_page")'))
 ui.button('Edit quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
 
-
-
+							
+									 
 
 # Run the app
 ui.run()
