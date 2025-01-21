@@ -1,8 +1,8 @@
-
 # hiermit wird die Applikation gestartet
-from nicegui import ui		   
+from nicegui import ui
 from datetime import datetime, timedelta
 from app.utils import create_quest, getAllQuests, deleteQuest, completeQuest, editQuest, create_user, update_user, get_all_user, delete_user
+from app.utils import create_quest, getAllQuests, deleteQuest, completeQuest, editQuest
 
 # Define a JavaScript function to detect tab closure
 js_code = '''
@@ -65,7 +65,7 @@ def edit_quest(id: int, name: str, desc: str, diff: str, start_date, due_date):
     if id is not None and id > 0:
         editQuest(id, name, desc, diff, start_date, due_date)
         ui.notify('Quest {id} edited')
-    
+
 def delete_quest(id: int):
     if quest_id != 0:
         deleteQuest(id)
@@ -137,13 +137,13 @@ def edit_page():
     quest_id = ui.select(
         options=quest_options_menu,
         on_change=lambda e: on_select_change(quest_id.value, buttons_showed)
-    ) 
+    )
 
     ui.label('Title:')
-    name_input = ui.input() 
-    
+    name_input = ui.input()
+
     ui.label('Description:')
-    description_input = ui.input() 
+    description_input = ui.input()
 
     ui.label('Select Difficulty:')
     difficulty_select = ui.select(
@@ -153,7 +153,7 @@ def edit_page():
     # Calendar inputs for start_date and due_date
     ui.label('Select Start Date:')
     start_date_picker = ui.date()
-    
+
     ui.label('Select Due Date:')
     due_date_picker = ui.date()
 
@@ -187,10 +187,84 @@ def edit_page():
             btn_delete.enable()
             btn_complete.enable()
 
+
+@ui.page('/edit_quest_page')
+def edit_page():
+    btn_edit = None
+
+
+    ui.label('Your quests:')
+
+    quests = getAllQuests()
+    quest_options = []
+    quest_options_menu = []
+    quest_open = ""
+
+    for quest in quests:
+        quest_options.append(quest)
+        quest_id = quest[0]
+        quest_options_menu.append(quest_id)
+
+    quest_id = ui.select(
+        options=quest_options_menu,
+        on_change=lambda e: on_select_change(quest_id.value)
+    )
+
+    ui.label('Title:')
+    name_input = ui.input()
+
+    ui.label('Description:')
+    description_input = ui.input()
+
+    ui.label('Select Difficulty:')
+    difficulty_select = ui.select(
+        options=['Easy', 'Normal', 'Hard']
+    )
+
+    # Calendar inputs for start_date and due_date
+    ui.label('Select Start Date:')
+    start_date_picker = ui.date()
+
+    ui.label('Select Due Date:')
+    due_date_picker = ui.date()
+
+    btn_edits = ui.button('Edits')
+
+    def on_select_change(selected_value):
+        selected_quest = next((quest for quest in quest_options if quest[0] == selected_value), None)
+        quest_id = selected_quest[0]
+        current_id = selected_quest[0]
+        name_input.value = selected_quest[2]
+        description_input.value = selected_quest[3]
+        difficulty_select.value = selected_quest[4]
+        start_date_picker.value = selected_quest[5]
+        due_date_picker.value = selected_quest[6]
+        quest_open = selected_quest[7]
+
+        global btn_edit
+        global btn_delete
+        global btn_complete
+
+        if quest_open == "open":
+            btn_edits.on_click = lambda: edit_quest(selected_quest[0], name_input.value, description_input.value, difficulty_select.value, start_date_picker.value, due_date_picker.value)
+
+            if btn_edit is None:
+                btn_edit = ui.button("Edits", on_click = lambda: edit_quest(selected_quest[0], name_input.value, description_input.value, difficulty_select.value, start_date_picker.value, due_date_picker.value))
+                btn_delete = ui.button("Delete")
+                btn_complete = ui.button("Complete")
+
+            btn_edit.enable()
+            btn_delete.enable()
+            btn_complete.enable()
+        else:
+            btn_edit.disable()
+            btn_delete.disable()
+            btn_complete.disable()
+
 @ui.page('/see_quests_page')
 def see_quests_page():
     ui.label('Here are your quests:')
-    quests = getAllQuests()
+    quests = getAllOpenQuests()
 
     for quest in quests:
         quest_description = quest[3]
@@ -211,9 +285,9 @@ def see_quests_page():
 @ui.page('/create_user')
 def create_user():
     ui.label('Create user:')
-    
+
     ui.label('Name:')
-    name_input = ui.input('Enter username here') 
+    name_input = ui.input('Enter username here')
 
     ui.label('select image here:')
     image_path_input = ui.input('Enter image here !!!DAS WIRD SPÄTER NOCH GEÄNDERT!!!')
@@ -232,35 +306,32 @@ def create_user():
     xp_input = 0
 
     ui.button(
-    'Create User', 
+    'Create User',
     on_click=lambda: ui.notify(
         create_user(
-            name_input.value, 
-            image_path_input.value, 
-            race_input.value, 
-            clas_input.value, 
+            name_input.value,
+            image_path_input.value,
+            race_input.value,
+            clas_input.value,
             level_input,
             xp_input
         )
     )
-)																		
+)
         
-						  
-					
-										
-
-
 
 # Buttons to open or focus on the other tabs
-																								 
+ui.button('Some other page', on_click=lambda: ui.run_javascript('openOrFocusTab("/other_page")'))
 ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_quest_page")'))
 ui.button('Edit quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
 ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_user")'))
-																					  
 
 
-							
-									 
+ui.button('See quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_quests_page")'))
+ui.button('Edit quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
+
+
+
 
 # Run the app
 ui.run()

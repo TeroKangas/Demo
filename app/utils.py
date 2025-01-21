@@ -56,6 +56,14 @@ def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
     obj.editQuest(id, name, desc, diff, start_date, due_date)
     return 0
 
+def completeQuest(id: int):
+    obj.completeQuest(id)
+    return 0
+
+def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
+    obj.editQuest(id, name, desc, diff, start_date, due_date)
+    return 0
+
 
 def create_user(name: str, image_path: str, race: str, clas: str, level: int, xp: int):
     empty_fields = []
@@ -66,7 +74,7 @@ def create_user(name: str, image_path: str, race: str, clas: str, level: int, xp
 
     if empty_fields:
         return f"Error! Missing values for: {', '.join(empty_fields)}"
-    
+
     obj_user.createUser(
         name=name,
         image_path=image_path,
@@ -75,7 +83,7 @@ def create_user(name: str, image_path: str, race: str, clas: str, level: int, xp
         level=level,
         xp=xp
     )
-    
+
     return f'User "{name}" created successfully!'
 
 def get_all_user():
