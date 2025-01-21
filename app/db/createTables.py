@@ -24,7 +24,8 @@ def create_tables_if_needed():
             race TEXT DEFAULT noRace,
             clas TEXT DEFAULT noClass,
             level INTEGER DEFAULT 1,
-            xp INTEGER DEFAULT 0
+            xp INTEGER DEFAULT 0,
+            is_active INTEGER DEFAULT 0
         )
     ''')
 

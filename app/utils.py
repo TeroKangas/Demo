@@ -57,16 +57,14 @@ def completeQuest(id: int):
 def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
     obj.editQuest(id, name, desc, diff, start_date, due_date)
 
-
-
 def completeQuest(id: int):
     obj.completeQuest(id)
-    return 0
+
+def changePlayer(name: str):
+    obj_user.changePlayer(name)
 
 def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
     obj.editQuest(id, name, desc, diff, start_date, due_date)
-    return 0
-
 
 def create_user(name: str, image_path: str, race: str, clas: str, level: int, xp: int):
     empty_fields = []
@@ -77,6 +75,13 @@ def create_user(name: str, image_path: str, race: str, clas: str, level: int, xp
 
     if empty_fields:
         return f"Error! Missing values for: {', '.join(empty_fields)}"
+    
+    users = get_all_user()
+
+    if len(users) == 0:
+        is_active = 1
+    else:
+        is_active = 0
 
     obj_user.createUser(
         name=name,
@@ -84,7 +89,8 @@ def create_user(name: str, image_path: str, race: str, clas: str, level: int, xp
         race=race,
         clas=clas,
         level=level,
-        xp=xp
+        xp=xp,
+        is_active=is_active
     )
 
     return f'User "{name}" created successfully!'
@@ -100,3 +106,7 @@ def delete_user(id: int):
 def update_user(id: int, name: str = None, image_path: str = None, race: str = None, clas: str = None):
     obj_user.updateUser(id, name, image_path, race, clas)
     return 0
+
+def activate_user(id: int):
+    msg = obj_user.getAllUser()
+    return msg
