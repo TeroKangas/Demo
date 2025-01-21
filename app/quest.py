@@ -24,6 +24,13 @@ class QuestManager:
         print(f"{len(quests)} Quests gefunden.")
         return quests
 
+    def getCompletedQuests(self):
+        """Ruft alle erledigte Quests des Benutzers ab."""
+        self.cursor.execute("SELECT * FROM quest WHERE user_id = ? AND status = 'completed'", (self.user_id,))
+        quests = self.cursor.fetchall()
+        print(f"{len(quests)} completed Quests gefunden.")
+        return quests
+
     def getOpenQuests(self):
         """Ruft alle offenen Quests des Benutzers ab."""
         self.cursor.execute("SELECT * FROM quest WHERE user_id = ? AND status = 'open'", (self.user_id,))

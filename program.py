@@ -1,9 +1,8 @@
-# hiermit wird die Applikation gestartet
 from nicegui import ui
 from datetime import datetime, timedelta
-from app.utils import create_quest, getAllQuests, deleteQuest, completeQuest, editQuest
+from app.utils import create_quest, getAllOpenQuests, deleteQuest, completeQuest, editQuest, getAllCompletedQuests
 
-# Define a JavaScript function to detect tab closure
+
 js_code = '''
 function openOrFocusTab(url) {
     var tabs = window.tabs || (window.tabs = {});
@@ -26,18 +25,12 @@ function openOrFocusTab(url) {
 }
 '''
 
-# Inject the JavaScript function directly into the head
 ui.add_head_html(f'''
     <script>{js_code}</script>
 ''')
 
 #global variables
 buttons_showed: bool = False
-quest_id = 0
-current_id = 0
-btn_edit: ui.button = None
-btn_delete: ui.button = None
-btn_complete: ui.button = None
 
 class ButtonManager:
     def __init__(self):
@@ -55,27 +48,28 @@ class ButtonManager:
             raise ValueError("buttons_showed must be a boolean value")
 
 def edit_quest(id: int, name: str, desc: str, diff: str, start_date, due_date):
-    if quest_id != 0:
-        editQuest(id, name, desc, diff, start_date, due_date)
-        ui.notify('Quest {id} edited')
-
     if id is not None and id > 0:
-        editQuest(id, name, desc, diff, start_date, due_date)
-        ui.notify('Quest {id} edited')
+        if name != '' and desc != '':
+            editQuest(id, name, desc, diff, start_date, due_date)
+            ui.notify('Quest edited')
+        else:
+            ui.notify('Title and description must be given.')
     
 def delete_quest(id: int):
-    if quest_id != 0:
+    if id != 0:
         deleteQuest(id)
-        ui.notify('Quest {id} deleted')
+        ui.notify('Quest deleted')
+        btn_edit.enabled = False
+        btn_delete.enabled = False
+        btn_complete.enabled = False
 
 def complete_quest(id: int):
-    if quest_id != 0:
+    if id != 0:
         completeQuest(id)
-        ui.notify('Quest {id} completed')
-
-@ui.page('/other_page')
-def other_page():
-    ui.label('Welcome to the other side')
+        ui.notify('Quest completed')
+        btn_edit.enabled = False
+        btn_delete.enabled = False
+        btn_complete.enabled = False
 
 @ui.page('/create_quest_page')
 def quest_page():
@@ -92,15 +86,14 @@ def quest_page():
         options=['Easy', 'Normal', 'Hard']
     )
 
-    # Calendar inputs for start_date and due_date
     ui.label('Select Start Date:')
     start_date_picker = ui.date(
-        value=datetime.now().strftime('%Y-%m-%d')  # Default to today
+        value=datetime.now().strftime('%Y-%m-%d')
     )
     
     ui.label('Select Due Date:')
     due_date_picker = ui.date(
-        value=(datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')  # Default to one week from now
+        value=(datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
     )
 
     ui.button(
@@ -121,10 +114,9 @@ def edit_page():
     ui.label('Your quests:')
     ButtonManager.buttons_showed = False
 
-    quests = getAllQuests()
+    quests = getAllOpenQuests()
     quest_options = []
     quest_options_menu = []
-    quest_open = ""
 
     for quest in quests:
         quest_options.append(quest)
@@ -133,7 +125,7 @@ def edit_page():
 
     quest_id = ui.select(
         options=quest_options_menu,
-        on_change=lambda e: on_select_change(quest_id.value, buttons_showed)
+        on_change=lambda e: on_select_change(quest_id.value)
     ) 
 
     ui.label('Title:')
@@ -147,23 +139,19 @@ def edit_page():
         options=['Easy', 'Normal', 'Hard']
     )
 
-    # Calendar inputs for start_date and due_date
     ui.label('Select Start Date:')
     start_date_picker = ui.date()
     
     ui.label('Select Due Date:')
     due_date_picker = ui.date()
 
-    def on_select_change(selected_value, buttonbool: bool):
+    def on_select_change(selected_value):
         selected_quest = next((quest for quest in quest_options if quest[0] == selected_value), None)
-        quest_id = selected_quest[0]
-        current_id = selected_quest[0]
         name_input.value = selected_quest[2]
         description_input.value = selected_quest[3]
         difficulty_select.value = selected_quest[4]
         start_date_picker.value = selected_quest[5]
         due_date_picker.value = selected_quest[6]
-        quest_open = selected_quest[7]
 
         global btn_edit
         global btn_delete
@@ -171,44 +159,46 @@ def edit_page():
 
         if ButtonManager.buttons_showed == False:
             btn_edit = ui.button("Save changes", on_click = lambda: edit_quest(selected_quest[0], name_input.value, description_input.value, difficulty_select.value, start_date_picker.value, due_date_picker.value))
-            btn_delete = ui.button("Delete", on_click = lambda: delete_quest(selected_quest[0], name_input.value, description_input.value, difficulty_select.value, start_date_picker.value, due_date_picker.value))
-            btn_complete = ui.button("Complete", on_click = lambda: complete_quest(selected_quest[0], name_input.value, description_input.value, difficulty_select.value, start_date_picker.value, due_date_picker.value))
+            btn_delete = ui.button("Delete", on_click = lambda: handle_delete_action(selected_quest[0]))
+            btn_complete = ui.button("Complete", on_click = lambda: handle_complete_action(selected_quest[0]))
             ButtonManager.buttons_showed = True
 
-        if ButtonManager.buttons_showed == True and quest_open == 'completed':
-            btn_edit.disable()
-            btn_delete.disable()
-            btn_complete.disable()
-        if ButtonManager.buttons_showed == True and quest_open == 'open':
-            btn_edit.enable()
-            btn_delete.enable()
-            btn_complete.enable()
+        if ButtonManager.buttons_showed == True:
+            btn_edit.enabled = True
+            btn_delete.enabled = True
+            btn_complete.enabled = True
 
-@ui.page('/see_quests_page')
+    def handle_complete_action(id: int):
+        complete_quest(id)
+        quest_options_menu.remove(id)
+
+    def handle_delete_action(id: int):
+        delete_quest(id)
+        quest_options_menu.remove(id)
+
+@ui.page('/see_closed_quests_page')
 def see_quests_page():
-    ui.label('Here are your quests:')
-    quests = getAllQuests()
+    ui.label('Here are your completed quests:')
+    quests = getAllCompletedQuests()
 
     for quest in quests:
         quest_description = quest[3]
         quest_difficulty = quest[4]
         quest_start_date = quest[5]
         quest_due_date = quest[6]
-        quest_open = quest[7]
 
-        newtext = (
-            f"""Description: {quest_description},
+        item = (
+        f"""Description: {quest_description},
         Difficulty: {quest_difficulty}, 
         Start date: {quest_start_date}, 
-        Due date: {quest_due_date},
-        Guest status: {quest_open}"""
-        )
-        ui.label(newtext)
+        Due date: {quest_due_date}
+        """)
+        ui.label(item)
 
-        
 # Buttons to open or focus on the other tabs
 ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_quest_page")'))
-ui.button('Edit quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
+ui.button('Open quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
+ui.button('Closed quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_closed_quests_page")'))
 
 # Run the app
 ui.run()
