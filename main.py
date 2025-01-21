@@ -293,14 +293,13 @@ def edit_page():
         global btn_delete
 
         if not ButtonManager.buttons_showed:
-            btn_edit = ui.button("Save changes", on_click=lambda: update_user(
+            btn_edit = ui.button("Save changes", on_click=lambda: ui.notify(update_user(
                 selected_user[0], name_input.value, image_path_input.value, race_input.value, 
                 clas_input.value
-            ))
-            btn_delete = ui.button("Delete", on_click=lambda: delete_user(
-                selected_user[0], name_input.value, image_path_input.value, race_input.value, 
-                clas_input.value
-            ))
+            )))
+            btn_delete = ui.button("Delete", on_click=lambda: ui.notify(delete_user(
+                selected_user[0]
+            )))
             ButtonManager.buttons_showed = True					  
 					
 @ui.page('/see_users_page')
