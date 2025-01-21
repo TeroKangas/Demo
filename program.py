@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from app.utils import create_quest, getAllOpenQuests, deleteQuest, completeQuest, editQuest, getAllCompletedQuests
 from app.utils import create_quest, getAllQuests, deleteQuest, completeQuest, editQuest, create_user, update_user, get_all_user, delete_user
 from app.utils import create_quest, getAllQuests, deleteQuest, completeQuest, editQuest
+from app.db.createTables import create_tables_if_needed
 
 
 js_code = '''
@@ -33,6 +34,8 @@ ui.add_head_html(f'''
 
 #global variables
 buttons_showed: bool = False
+
+create_tables_if_needed()
 
 class ButtonManager:
     def __init__(self):
@@ -293,6 +296,8 @@ def edit_page():
 
 @ui.page('/see_users_page')
 def see_users_page():
+    ui.label('Change user:')
+
     ui.label('Here are your users:')
     users = get_all_user()
 
@@ -318,18 +323,23 @@ def see_users_page():
         )
         ui.label(newtext)
 
+def show_player():
+    users = get_all_user()
+    if len(users) == 0:
+        return "Player: not selected"
+    else:
+        name = users[0][1]
+        level = users[0][5]
+        return f"Player name: {name} | Level: {level}"
 
-
-
+ui.label(show_player())
 # Buttons to open or focus on the other tabs
 ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_quest_page")'))
-ui.button('See quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_quests_page")'))
 ui.button('Open quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
 ui.button('Closed quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_closed_quests_page")'))
-ui.button('Edit quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
-ui.button('User Creation', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_user_page")'))
-ui.button('Edit User', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_user")'))
-ui.button('See User', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_users_page")'))
+ui.button('Create user', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_user_page")'))
+#ui.button('Edit User', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_user")'))
+ui.button('User info', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_users_page")'))
 
 # Run the app
 ui.run()
