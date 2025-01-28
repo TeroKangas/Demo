@@ -65,7 +65,8 @@ class UserManager:
         result = self.cursor.fetchone()
         if result:
             return int(result[0])
-        return None
+        else:
+            return None
 
     def deleteUser(self, id):
         """Löscht einen User aus der Datenbank."""

@@ -81,6 +81,20 @@ class QuestManager:
         self.conn.commit()
         print(f"Quest '{name}' wurde edited.")
 
+
+    def getHowMuchXp(self, id):
+        self.cursor.execute('''
+            SELECT difficulty 
+            FROM quest 
+            WHERE id = ?;
+        ''', (id)
+            )
+        result = self.cursor.fetchone()
+        if result:
+            return int(result[0])
+        else:
+            return None
+
     def closeonnection(self):
         """Schließt die Verbindung zur Datenbank."""
         self.conn.close()

@@ -67,7 +67,9 @@ def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
     obj.editQuest(id, name, desc, diff, start_date, due_date)
 
 def completeQuest(id: int):
+    userId = obj_user.get_active_user_id() #userId enthält die id des aktuellen aktiven users als int
     
+    obj_level.add_xp
     obj.completeQuest(id)
 
 def changePlayer(name: str):
