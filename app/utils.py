@@ -107,6 +107,7 @@ def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
             ui.notify("Title and description must be given.")
 
 def completeQuest(id: int):
+    
     obj.completeQuest(id)
 
 def changePlayer(name: str):
