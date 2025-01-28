@@ -4,7 +4,7 @@
 import os
 import sys
 import datetime
-from nicegui import ui   
+from nicegui import ui
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -70,13 +70,13 @@ def create_quest(name: str, description: str, difficulty: str, startDate: str, e
 
     if end_date <= start_date:
         return "Error! The end date must be greater than the start date."
-    
+
     quests = getAllQuests()
 
     for quest in quests:
         if quest[2] == name:
             return "Error! A quest with this name is already existing."
-    
+
     obj.createQuest(
         name=name,
         description=description,
@@ -116,9 +116,12 @@ def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
             ui.notify("Title and description must be given.")
 
 def completeQuest(id: int):
-    userId = obj_user.get_active_user_id() #userId enthält die id des aktuellen aktiven users als int
-    
-    obj_level.add_xp
+    howXp = obj.getHowMuchXp(id)
+    if howXp:
+        obj_level.add_xp(howXp)
+    else:
+        obj_level.add_xp(2)
+        print("Quest hat keine definierte XP, Standardwert wird verwendet.")
     obj.completeQuest(id)
 
 def changePlayer(name: str):
