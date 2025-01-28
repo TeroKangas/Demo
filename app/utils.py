@@ -10,11 +10,20 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import quest
 import user
+import level
 
 db_dir = 'db'
 db_path = os.path.join(db_dir, 'game.db')
+
 obj = quest.QuestManager(db_path, 1)
 obj_user = user.UserManager(db_path, 1)
+obj_level = level.LevelSystem(db_path, 1)
+
+user_id = obj_user.get_active_user_id()
+
+obj = quest.QuestManager(db_path, user_id)
+obj_user = user.UserManager(db_path, user_id)
+obj_level = level.LevelSystem(db_path, user_id)
 
 def get_js_code():
     return '''
