@@ -87,11 +87,21 @@ class QuestManager:
             SELECT difficulty 
             FROM quest 
             WHERE id = ?;
-        ''', (id)
+        ''', (id,)
             )
         result = self.cursor.fetchone()
         if result:
-            return int(result[0])
+            if result[0] == "Easy":
+                return 2
+            
+            elif result[0] == "Normal":
+                return 5
+            
+            elif result[0] == "Hard":
+                return 10
+            
+            else:
+                return None
         else:
             return None
 

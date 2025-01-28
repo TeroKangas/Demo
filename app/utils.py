@@ -24,7 +24,6 @@ obj = quest.QuestManager(db_path, user_id)
 obj_user = user.UserManager(db_path, user_id)
 obj_level = level.LevelSystem(db_path, user_id)
 
-
 def create_quest(name: str, description: str, difficulty: str, startDate: str, endDate: str):
     empty_fields = []
 
@@ -67,9 +66,12 @@ def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
     obj.editQuest(id, name, desc, diff, start_date, due_date)
 
 def completeQuest(id: int):
-    userId = obj_user.get_active_user_id() #userId enthält die id des aktuellen aktiven users als int
-    
-    obj_level.add_xp
+    howXp = obj.getHowMuchXp(id)
+    if howXp:
+        obj_level.add_xp(howXp)
+    else:
+        obj_level.add_xp(2)
+        print("Quest hat keine definierte XP, Standardwert wird verwendet.")
     obj.completeQuest(id)
 
 def changePlayer(name: str):

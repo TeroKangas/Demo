@@ -1,9 +1,9 @@
 import sqlite3
-
+import user
 
 
 class LevelSystem:
-    def __init__(self, db_path, user_id, max_level=80, xp_per_level=1000):
+    def __init__(self, db_path, user_id, max_level=100, xp_per_level=50):
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         self.user_id = user_id
