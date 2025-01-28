@@ -58,6 +58,7 @@ def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
     obj.editQuest(id, name, desc, diff, start_date, due_date)
 
 def completeQuest(id: int):
+    
     obj.completeQuest(id)
 
 def changePlayer(name: str):

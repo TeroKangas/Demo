@@ -36,9 +36,9 @@ def create_tables_if_needed():
             user_id INTEGER NOT NULL,
             name TEXT NOT NULL,
             description TEXT,
-            difficulty TEXT NOT NULL,
+            difficulty TEXT NOT NULL,        -- Easy = 2; Normal = 5; Hard = 10
             start_date datetime NOT NULL,
-            due_date datetime NOT NULL,       -- Datum als Text im Format DD-MM-YYYY HH-MM-SS
+            due_date datetime NOT NULL,       -- Datum als Text im Format DD-MM-YYYY
             status TEXT NOT NULL,         -- Status: 'open' oder 'completed'
             FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
         )  
