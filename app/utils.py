@@ -116,7 +116,9 @@ def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
             ui.notify("Title and description must be given.")
 
 def completeQuest(id: int):
+    userId = obj_user.get_active_user_id() #userId enthält die id des aktuellen aktiven users als int
     
+    obj_level.add_xp
     obj.completeQuest(id)
 
 def changePlayer(name: str):
