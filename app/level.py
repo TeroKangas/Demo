@@ -31,6 +31,9 @@ class LevelSystem:
         print(f"Daten gespeichert: Level {self.current_level}, XP {self.current_xp}")
 
     def add_xp(self, xp):
+        result = self.load_user_data()
+        self.current_level = result[0]
+        self.current_xp = result[1]
         if self.current_level < self.max_level:
             self.current_xp += xp
             print(f"XP hinzugefügt: {xp}. Gesamt XP: {self.current_xp}")
