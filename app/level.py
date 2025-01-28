@@ -1,14 +1,5 @@
 import sqlite3
-# import os
 
-# Datenbank verbinden
-db_path = r"PycharmProjects\Demo\app\db\db\game.db"
-#db_path = r"C:\Users\lucie\PycharmProjects\Demo\app\db\db\game.db"
-# conn = sqlite3.connect(db_path)
-
-# Absoluten Pfad zur Datenbank anzeigen
-# absolute_path = os.path.abspath(db_path)
-# print(f"Datenbank gespeichert unter: {absolute_path}")
 
 
 class LevelSystem:
