@@ -4,6 +4,7 @@
 import os
 import sys
 import datetime
+from nicegui import ui   
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -15,6 +16,35 @@ db_path = os.path.join(db_dir, 'game.db')
 obj = quest.QuestManager(db_path, 1)
 obj_user = user.UserManager(db_path, 1)
 
+def get_js_code():
+    return '''
+    function openOrFocusTab(url) {
+        var tabs = window.tabs || (window.tabs = {});
+        
+        // Check if the tab reference exists and is not closed
+        if (tabs[url] && !tabs[url].closed) {
+            tabs[url].focus();
+        } else {
+            // Open a new tab and store the reference
+            tabs[url] = window.open(url, '_blank');
+            
+            // Handle tab closure
+            tabs[url].onbeforeunload = function() {
+                delete tabs[url];
+                
+                // Send an event to the server when the tab is closed
+                fetch('/on_tab_closed', {method: 'POST'});
+            };
+        }
+    }
+    '''
+
+def handle_upload(event):
+    uploaded_file = event.files[0]
+    file_path = uploaded_file.path
+    # Read the image as binary
+    with open(file_path, 'rb') as f:
+        return f.read()
 
 def create_quest(name: str, description: str, difficulty: str, startDate: str, endDate: str):
     empty_fields = []
@@ -25,6 +55,18 @@ def create_quest(name: str, description: str, difficulty: str, startDate: str, e
 
     if empty_fields:
         return f"Error! Missing values for: {', '.join(empty_fields)}"
+    
+    start_date = datetime.datetime.strptime(startDate, "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(endDate, "%Y-%m-%d")
+
+    if end_date <= start_date:
+        return "Error! The end date must be greater than the start date."
+    
+    quests = getAllQuests()
+
+    for quest in quests:
+        if quest[2] == name:
+            return "Error! A quest with this name is already existing."
     
     obj.createQuest(
         name=name,
@@ -50,12 +92,19 @@ def getAllCompletedQuests():
 
 def deleteQuest(id: int):
     obj.deleteQuest(id)
+    return f'Quest was deleted successfully!'
 
 def completeQuest(id: int):
     obj.completeQuest(id)
+    return f'Quest was completed successfully!'
 
 def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
-    obj.editQuest(id, name, desc, diff, start_date, due_date)
+    if id is not None and id > 0:
+        if name != '' and desc != '':
+            obj.editQuest(id, name, desc, diff, start_date, due_date)
+            ui.notify("Quest {name} edited")
+        else:
+            ui.notify("Title and description must be given.")
 
 def completeQuest(id: int):
     obj.completeQuest(id)
@@ -63,13 +112,10 @@ def completeQuest(id: int):
 def changePlayer(name: str):
     obj_user.changePlayer(name)
 
-def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
-    obj.editQuest(id, name, desc, diff, start_date, due_date)
-
-def create_user(name: str, image_path: str, race: str, clas: str, level: int, xp: int):
+def create_user(name: str, race: str, clas: str, level: int, xp: int, image_data):
     empty_fields = []
 
-    for field_name, field_value in [("name", name), ("image_path", image_path), ("race", race), ("clas", clas)]:
+    for field_name, field_value in [("name", name), ("race", race), ("clas", clas)]:
         if not field_value:
             empty_fields.append(field_name)
 
@@ -83,6 +129,8 @@ def create_user(name: str, image_path: str, race: str, clas: str, level: int, xp
     else:
         is_active = 0
 
+    image_path = "obsolet"
+
     obj_user.createUser(
         name=name,
         image_path=image_path,
@@ -90,7 +138,8 @@ def create_user(name: str, image_path: str, race: str, clas: str, level: int, xp
         clas=clas,
         level=level,
         xp=xp,
-        is_active=is_active
+        is_active=is_active,
+        image_data=image_data
     )
 
     return f'User "{name}" created successfully!'
