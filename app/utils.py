@@ -24,6 +24,11 @@ user_id = obj_user.get_active_user_id()
 obj = quest.QuestManager(db_path, user_id)
 obj_user = user.UserManager(db_path, user_id)
 obj_level = level.LevelSystem(db_path, user_id)
+user_id = obj_user.get_active_user_id()
+
+obj = quest.QuestManager(db_path, user_id)
+obj_user = user.UserManager(db_path, user_id)
+obj_level = level.LevelSystem(db_path, user_id)
 
 def get_js_code():
     return '''
