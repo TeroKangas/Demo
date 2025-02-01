@@ -1,19 +1,21 @@
 import sqlite3
 from datetime import datetime
-
+import user
 
 class QuestManager:
     def __init__(self, db_path, user_id):
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         self.user_id = user_id
+        self.user_manager = user.UserManager(db_path, 1)
 
     def createQuest(self, name, description, difficulty, start_date, due_date):
         """Erstellt eine neue Quest für den Benutzer."""
+        currUserId = self.user_manager.get_active_user_id()
         self.cursor.execute('''
             INSERT INTO quest (user_id, name, description, difficulty, start_date, due_date, status)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (self.user_id, name, description, difficulty, start_date, due_date, 'open'))
+        ''', (currUserId, name, description, difficulty, start_date, due_date, 'open'))
         self.conn.commit()
         print(f"Quest '{name}' wurde erstellt.")
 
@@ -26,14 +28,20 @@ class QuestManager:
 
     def getCompletedQuests(self):
         """Ruft alle erledigte Quests des Benutzers ab."""
-        self.cursor.execute("SELECT * FROM quest WHERE user_id = ? AND status = 'completed'", (self.user_id,))
+        currUserId = self.user_manager.get_active_user_id()
+        self.cursor.execute("SELECT * FROM quest WHERE user_id = ? AND status = 'completed'", (currUserId,))
         quests = self.cursor.fetchall()
         print(f"{len(quests)} completed Quests gefunden.")
         return quests
 
     def getOpenQuests(self):
         """Ruft alle offenen Quests des Benutzers ab."""
-        self.cursor.execute("SELECT * FROM quest WHERE user_id = ? AND status = 'open'", (self.user_id,))
+        self.cursor.execute('''
+            SELECT quest.* 
+            FROM quest
+            JOIN user
+            ON quest.user_id = user.id
+            WHERE quest.status = 'open' AND user.is_active = 1; ''')
         open_quests = self.cursor.fetchall()
         print(f"{len(open_quests)} offene Quests gefunden.")
         return open_quests
@@ -71,16 +79,40 @@ class QuestManager:
     
     def editQuest(self, quest_id = None, name = None, description = None, difficulty = None, start_date = None, due_date = None):
         """Bearbeitet eine bestehende Quest."""
-
+        currUserId = self.user_manager.get_active_user_id()
         self.cursor.execute('''
             UPDATE quest
             SET user_id = ?, name = ?, description = ?, difficulty = ?, start_date = ?, due_date = ?, status = ?
             WHERE id = ?;    
-        ''', (1, name, description, difficulty, start_date, due_date, 'open', quest_id))
+        ''', (currUserId, name, description, difficulty, start_date, due_date, 'open', quest_id))
 
         self.conn.commit()
         print(f"Quest '{name}' wurde edited.")
 
-    def closeonnection(self):
+
+    def getHowMuchXp(self, id):
+        self.cursor.execute('''
+            SELECT difficulty 
+            FROM quest 
+            WHERE id = ?;
+        ''', (id,)
+            )
+        result = self.cursor.fetchone()
+        if result:
+            if result[0] == "Easy":
+                return 2
+            
+            elif result[0] == "Normal":
+                return 5
+            
+            elif result[0] == "Hard":
+                return 10
+            
+            else:
+                return None
+        else:
+            return None
+
+    def closeConnection(self):
         """Schließt die Verbindung zur Datenbank."""
         self.conn.close()

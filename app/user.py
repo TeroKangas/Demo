@@ -63,6 +63,14 @@ class UserManager:
         print(f"{len(user)} User gefunden.")
         return user
 
+    def get_active_user_id(self):
+        self.cursor.execute("SELECT id FROM user WHERE is_active = 1")
+        result = self.cursor.fetchone()
+        if result:
+            return int(result[0])
+        else:
+            return None
+
     def deleteUser(self, id):
         """Löscht einen User aus der Datenbank."""
         self.cursor.execute("DELETE FROM user WHERE id = ?", (id,))

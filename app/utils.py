@@ -4,17 +4,31 @@
 import os
 import sys
 import datetime
-from nicegui import ui   
+from nicegui import ui
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import quest
 import user
+import level
 
 db_dir = 'db'
 db_path = os.path.join(db_dir, 'game.db')
+
 obj = quest.QuestManager(db_path, 1)
 obj_user = user.UserManager(db_path, 1)
+obj_level = level.LevelSystem(db_path, 1)
+
+user_id = obj_user.get_active_user_id()
+
+obj = quest.QuestManager(db_path, user_id)
+obj_user = user.UserManager(db_path, user_id)
+obj_level = level.LevelSystem(db_path, user_id)
+user_id = obj_user.get_active_user_id()
+
+obj = quest.QuestManager(db_path, user_id)
+obj_user = user.UserManager(db_path, user_id)
+obj_level = level.LevelSystem(db_path, user_id)
 
 def get_js_code():
     return '''
@@ -61,13 +75,13 @@ def create_quest(name: str, description: str, difficulty: str, startDate: str, e
 
     if end_date <= start_date:
         return "Error! The end date must be greater than the start date."
-    
+
     quests = getAllQuests()
 
     for quest in quests:
         if quest[2] == name:
             return "Error! A quest with this name is already existing."
-    
+
     obj.createQuest(
         name=name,
         description=description,
@@ -107,6 +121,12 @@ def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
             ui.notify("Title and description must be given.")
 
 def completeQuest(id: int):
+    howXp = obj.getHowMuchXp(id)
+    if howXp:
+        obj_level.add_xp(howXp)
+    else:
+        obj_level.add_xp(2)
+        print("Quest hat keine definierte XP, Standardwert wird verwendet.")
     obj.completeQuest(id)
 
 def changePlayer(name: str):
