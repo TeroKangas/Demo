@@ -1,29 +1,14 @@
-from nicegui import ui
-from datetime import datetime, timedelta
-from app.utils import create_quest, getAllCompletedQuests, deleteQuest, completeQuest, editQuest, create_user, update_user, get_all_user, delete_user, changePlayer, getAllOpenQuests
+from datetime import datetime, timedelta  
+from nicegui import ui                   
+
+from app.utils import (
+    create_quest, getAllCompletedQuests, deleteQuest, completeQuest,
+    editQuest, create_user, update_user, get_all_user, delete_user,
+    changePlayer, getAllOpenQuests, get_js_code, getAllQuests, handle_upload
+)
 from app.db.createTables import create_tables_if_needed
 
-js_code = '''
-function openOrFocusTab(url) {
-    var tabs = window.tabs || (window.tabs = {});
-    
-    // Check if the tab reference exists and is not closed
-    if (tabs[url] && !tabs[url].closed) {
-        tabs[url].focus();
-    } else {
-        // Open a new tab and store the reference
-        tabs[url] = window.open(url, '_blank');
-        
-        // Handle tab closure
-        tabs[url].onbeforeunload = function() {
-            delete tabs[url];
-            
-            // Send an event to the server when the tab is closed
-            fetch('/on_tab_closed', {method: 'POST'});
-        };
-    }
-}
-'''
+js_code = get_js_code()
 
 ui.add_head_html(f'''
     <script>{js_code}</script>
@@ -63,77 +48,90 @@ class ButtonManager:
         else:
             raise ValueError("_buttons_showed_player_cockpit must be a boolean value")
 
-def edit_quest(id: int, name: str, desc: str, diff: str, start_date, due_date):
-    if id is not None and id > 0:
-        if name != '' and desc != '':
-            editQuest(id, name, desc, diff, start_date, due_date)
-            ui.notify('Quest edited')
-        else:
-            ui.notify('Title and description must be given.')
-    
+# Auxilary methods: 
+
 def delete_quest(id: int):
     if id != 0:
-        deleteQuest(id)
-        ui.notify('Quest deleted')
+        delete_msg = deleteQuest(id)
         btn_edit.enabled = False
         btn_delete.enabled = False
         btn_complete.enabled = False
+        return delete_msg
 
 def complete_quest(id: int):
     if id != 0:
-        completeQuest(id)
-        ui.notify('Quest completed')
+        complete_msg = completeQuest(id)
         btn_edit.enabled = False
         btn_delete.enabled = False
         btn_complete.enabled = False
+        return complete_msg
 
 def change_user(name: str):
     if name != '':
         changePlayer(name)
         ui.notify('Player changed')
 
+def show_player_name_and_level():
+    users = get_all_user()
+    if len(users) == 0:
+        return "Player: not selected"
+    else:  
+        for user in users:
+            abc = user
+            if abc[7] == 1: #if user is active
+                name = abc[1]
+                level = abc[5]
+                return f"Player name: {name} | Level: {level}"
+
+    return "No user is activated"
+
+def set_profile_image_size():
+    width = 75
+    height = 75
+    return width, height
+
+#Pages:
+
 @ui.page('/create_quest_page')
-def quest_page():
-    ui.label('Create quest:')
-    
+def create_quest_page():
+    ui.label('Create quest')
+
     ui.label('Title:')
-    name_input = ui.input('Enter quest title here') 
+    name_input = ui.input() 
     
     ui.label('Description:')
-    description_input = ui.input('Enter quest description here')
+    description_input = ui.input()
 
-    ui.label('Select Difficulty:')
+    ui.label('Select difficulty:')
     difficulty_select = ui.select(
         options=['Easy', 'Normal', 'Hard']
-    )
-
-    ui.label('Select Start Date:')
-    start_date_picker = ui.date(
-        value=datetime.now().strftime('%Y-%m-%d')
-    )
+)
     
-    ui.label('Select Due Date:')
+    ui.label('Select start date:')
+    start_date_picker = ui.date(
+    value=datetime.now().strftime('%Y-%m-%d')
+    )
+    ui.label('Select due date:')
     due_date_picker = ui.date(
-        value=(datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+    value=(datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
     )
 
     ui.button(
-    'Create Quest', 
-    on_click=lambda: ui.notify(
-        create_quest(
-            name_input.value, 
-            description_input.value, 
-            difficulty_select.value, 
-            start_date_picker.value, 
-            due_date_picker.value
+        'Create Quest',
+        on_click=lambda: ui.notify(
+            create_quest(
+                name_input.value,
+                description_input.value,
+                difficulty_select.value,
+                start_date_picker.value,
+                due_date_picker.value
+            )
         )
     )
-)
 
-@ui.page('/edit_quest_page')
-def edit_page():
+@ui.page('/open_quests_page')
+def open_quests_page():
     ui.label('Your quests:')
-    ButtonManager.buttons_showed = False
 
     quests = getAllOpenQuests()
     quest_options = []
@@ -161,13 +159,18 @@ def edit_page():
     )
 
     ui.label('Select Start Date:')
-    start_date_picker = ui.date()
+    start_date_picker = ui.date()   
     
     ui.label('Select Due Date:')
     due_date_picker = ui.date()
 
+    ButtonManager.buttons_showed = False
+
     def on_select_change(selected_value):
-        selected_quest = next((quest for quest in quest_options if quest[0] == selected_value), None)
+        for quest in getAllQuests():
+            if quest[0] == selected_value:
+                selected_quest = quest
+
         name_input.value = selected_quest[2]
         description_input.value = selected_quest[3]
         difficulty_select.value = selected_quest[4]
@@ -178,24 +181,59 @@ def edit_page():
         global btn_delete
         global btn_complete
 
-        if ButtonManager.buttons_showed == False:
-            btn_edit = ui.button("Save changes", on_click = lambda: edit_quest(selected_quest[0], name_input.value, description_input.value, difficulty_select.value, start_date_picker.value, due_date_picker.value))
-            btn_delete = ui.button("Delete", on_click = lambda: handle_delete_action(selected_quest[0]))
-            btn_complete = ui.button("Complete", on_click = lambda: handle_complete_action(selected_quest[0]))
+        if not ButtonManager.buttons_showed:
+            # Create the buttons with the correct `on_click` actions
+            btn_edit = ui.button(
+                "Save changes", 
+                on_click=lambda: editQuest(
+                    selected_quest[0], 
+                    name_input.value, 
+                    description_input.value, 
+                    difficulty_select.value, 
+                    start_date_picker.value, 
+                    due_date_picker.value
+                )
+            )
+            btn_delete = ui.button(
+                "Delete", 
+                on_click=lambda: ui.notify(handle_delete_action(selected_quest[0]))
+            )
+            btn_complete = ui.button(
+                "Complete", 
+                on_click=lambda: ui.notify(handle_complete_action(selected_quest[0]))
+            )
             ButtonManager.buttons_showed = True
 
-        if ButtonManager.buttons_showed == True:
+        else:
+            # Enable the buttons and re-assign the `on_click` handlers
             btn_edit.enabled = True
             btn_delete.enabled = True
             btn_complete.enabled = True
 
+            # Update the `on_click` actions to handle new values
+            btn_edit.on_click = lambda: editQuest(
+                selected_quest[0], 
+                name_input.value, 
+                description_input.value, 
+                difficulty_select.value, 
+                start_date_picker.value, 
+                due_date_picker.value
+            )
+            btn_delete.on_click = lambda: ui.notify(handle_delete_action(selected_quest[0]))
+            btn_complete.on_click = lambda: ui.notify(handle_complete_action(selected_quest[0]))
+
+        if selected_quest[7] != "open":
+            btn_edit.enabled = False
+            btn_delete.enabled = False
+            btn_complete.enabled = False
+
     def handle_complete_action(id: int):
-        complete_quest(id)
-        quest_options_menu.remove(id)
+        complete_msg = complete_quest(id)
+        return complete_msg
 
     def handle_delete_action(id: int):
-        delete_quest(id)
-        quest_options_menu.remove(id)
+        delete_msg = delete_quest(id)
+        return delete_msg
 
 @ui.page('/see_closed_quests_page')
 def see_quests_page():
@@ -224,7 +262,8 @@ def create_user_page():
     name_input = ui.input('Enter username here')
 
     ui.label('select image here:')
-    image_path_input = ui.input('Enter image here !!!DAS WIRD SPÄTER NOCH GEÄNDERT!!!')
+    image_data = {}
+    ui.upload(on_upload=lambda e: image_data.update({"image": handle_upload(e)}), max_files=1)
 
     ui.label('Select Race:')
     race_input = ui.select(
@@ -244,17 +283,17 @@ def create_user_page():
     on_click=lambda: ui.notify(
         create_user(
             name_input.value,
-            image_path_input.value,
             race_input.value,
             clas_input.value,
             level_input,
-            xp_input
+            xp_input,
+            image_data.get("image")
         )
     )
 )
 
 @ui.page('/edit_user')
-def edit_page():
+def edit_user():
     ui.label('Your users:')
     ButtonManager.buttons_showed = False
 
@@ -329,17 +368,43 @@ def see_users_page():
         change_user(name)
         label_container.clear()
         with label_container:
-            ui.label(show_player())        
+            ui.label(show_player_name_and_level())  
 
     def on_select_change(event):
         global user_name
         user_name = event.value
-
+    
         selected_player = next((user for user in user_options if user[1] == user_name), None)
 
         global btn_change_player
         if not ButtonManager.buttons_showed_player_cockpit:
             btn_change_player = ui.button("Save change", on_click=lambda: handle_user_change(selected_player[1]))
+            ui.label('The user information:')
+            users = get_all_user()
+
+            for user in users:
+                user_id = user[0]
+                user_name = user[1]
+                user_image_path = user[2]
+                user_race = user[3]
+                user_clas = user[4]
+                user_level = user[5]
+                user_xp = user[6]
+                user_active = user[7]
+
+                newtext = (
+                    f"""
+                id: {user_id},
+                name: {user_name},
+                image_path: {user_image_path}, 
+                race: {user_race}, 
+                clas: {user_clas},
+                level: {user_level}
+                xp: {user_xp},
+                active: {user_active},
+                """
+                )
+                ui.label(newtext)
             ButtonManager.buttons_showed_player_cockpit = True
 
         if ButtonManager.buttons_showed_player_cockpit:
@@ -347,63 +412,26 @@ def see_users_page():
 
         label_container.clear()
         with label_container:
-            ui.label(show_player())
-    
+            ui.label(show_player_name_and_level())
+
     ui.select(
         options=user_options_menu,
         on_change=on_select_change
-    )
+    )     
 
-    ui.label('Here are your users:')
-    users = get_all_user()
-
-    for user in users:
-        user_id = user[0]
-        user_name = user[1]
-        user_image_path = user[2]
-        user_race = user[3]
-        user_clas = user[4]
-        user_level = user[5]
-        user_xp = user[6]
-        user_active = user[7]
-
-        newtext = (
-            f"""
-        id: {user_id},
-        name: {user_name},
-        image_path: {user_image_path}, 
-        race: {user_race}, 
-        clas: {user_clas},
-        level: {user_level}
-        xp: {user_xp},
-        active: {user_active},
-        """
-        )
-        ui.label(newtext)
-
-def show_player():
-    users = get_all_user()
-    if len(users) == 0:
-        return "Player: not selected"
-    else:  
-        for user in users:
-            abc = user
-            if abc[7] == 1: #if user is active
-                name = abc[1]
-                level = abc[5]
-                return f"Player name: {name} | Level: {level}"
-
-    return "No user is activated"
+#Main page interface:
 
 with ui.row() as label_container:
-    player_label = ui.label(show_player())
-# Buttons to open or focus on the other tabs
+    player_label = ui.label(show_player_name_and_level())
+with ui.row():
+    width, height = set_profile_image_size()
+    ui.image(source="app/static/Cat03.jpg").style(f"width: {width}px; height: {height}px; object-fit: cover;")
+
 ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_quest_page")'))
-ui.button('Open quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_quest_page")'))
+ui.button('Open quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/open_quests_page")'))
 ui.button('Closed quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/see_closed_quests_page")'))
 ui.button('Create user', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_user_page")'))
-#ui.button('Edit User', on_click=lambda: ui.run_javascript('openOrFocusTab("/edit_user")'))
 ui.button('Users cockpit', on_click=lambda: ui.run_javascript('openOrFocusTab("/users_cockpit")'))
 
-# Run the app
+# Run the app command:
 ui.run()

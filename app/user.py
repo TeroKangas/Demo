@@ -8,14 +8,17 @@ class UserManager:
         self.cursor = self.conn.cursor()
         self.user_id = user_id
 
-    def createUser(self, name, image_path, race, clas, level, xp, is_active):
+    def createUser(self, name, image_path, race, clas, level, xp, is_active, image_data):
         """Erstellt einen neuen user"""
         self.cursor.execute('''
-            INSERT INTO user (name, image_path, race, clas, level, xp, is_active)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (name, image_path, race, clas, level, xp, is_active))
+            INSERT INTO user (name, image_path, race, clas, level, xp, is_active, image)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (name, image_path, race, clas, level, xp, is_active, image_data))
         self.conn.commit()
         print(f"User '{name}' wurde erstellt.")
+
+    def write_file():
+        return NotImplementedError
     
     def updateUser(self, id, name=None, image_path=None, race=None, clas=None):    
         set_clause = []
