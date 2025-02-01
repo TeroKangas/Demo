@@ -15,38 +15,9 @@ ui.add_head_html(f'''
 ''')
 
 #global variables
-#buttons_showed_open_quests: bool = False
 player_label = None
 
 create_tables_if_needed()
-
-class ButtonManager:
-    def __init__(self):
-        self._buttons_showed_open_quests = False
-        self._buttons_showed_player_cockpit = False
-        self.player_label: str
-
-    @property
-    def buttons_showed(self):
-        return self._buttons_showed_open_quests
-
-    @buttons_showed.setter
-    def buttons_showed(self, value):
-        if isinstance(value, bool):
-            self._buttons_showed_open_quests = value
-        else:
-            raise ValueError("buttons_showed must be a boolean value")
-        
-    @property
-    def buttons_showed_player_cockpit(self):
-        return self._buttons_showed_player_cockpit
-
-    @buttons_showed.setter
-    def buttons_showed_player_cockpit(self, value):
-        if isinstance(value, bool):
-            self._buttons_showed_player_cockpit = value
-        else:
-            raise ValueError("_buttons_showed_player_cockpit must be a boolean value")
 
 # Auxilary methods: 
 
@@ -144,7 +115,7 @@ def open_quests_page():
 
     quest_id = ui.select(
         options=quest_options_menu,
-        on_change=lambda e: on_select_change(quest_id.value)
+        on_change=lambda e: on_select_change(e.value)
     ) 
 
     ui.label('Title:')
@@ -164,10 +135,16 @@ def open_quests_page():
     ui.label('Select Due Date:')
     due_date_picker = ui.date()
 
-    ButtonManager.buttons_showed = False
+    global btn_edit
+    global btn_delete
+    global btn_complete
+
+    btn_edit = ui.button("edit quest")
+    btn_delete = ui.button("delete quest")
+    btn_complete = ui.button("complete quest")
 
     def on_select_change(selected_value):
-        for quest in getAllQuests():
+        for quest in getAllOpenQuests():
             if quest[0] == selected_value:
                 selected_quest = quest
 
@@ -177,61 +154,36 @@ def open_quests_page():
         start_date_picker.value = selected_quest[5]
         due_date_picker.value = selected_quest[6]
 
-        global btn_edit
-        global btn_delete
-        global btn_complete
-
-        if not ButtonManager.buttons_showed:
-            # Create the buttons with the correct `on_click` actions
-            btn_edit = ui.button(
-                "Save changes", 
-                on_click=lambda: editQuest(
-                    selected_quest[0], 
-                    name_input.value, 
-                    description_input.value, 
-                    difficulty_select.value, 
-                    start_date_picker.value, 
-                    due_date_picker.value
-                )
-            )
-            btn_delete = ui.button(
-                "Delete", 
-                on_click=lambda: ui.notify(handle_delete_action(selected_quest[0]))
-            )
-            btn_complete = ui.button(
-                "Complete", 
-                on_click=lambda: ui.notify(handle_complete_action(selected_quest[0]))
-            )
-            ButtonManager.buttons_showed = True
-
-        else:
-            # Enable the buttons and re-assign the `on_click` handlers
-            btn_edit.enabled = True
-            btn_delete.enabled = True
-            btn_complete.enabled = True
-
-            # Update the `on_click` actions to handle new values
-            btn_edit.on_click = lambda: editQuest(
-                selected_quest[0], 
-                name_input.value, 
-                description_input.value, 
-                difficulty_select.value, 
-                start_date_picker.value, 
-                due_date_picker.value
-            )
-            btn_delete.on_click = lambda: ui.notify(handle_delete_action(selected_quest[0]))
-            btn_complete.on_click = lambda: ui.notify(handle_complete_action(selected_quest[0]))
+        btn_edit.on_click(lambda id=selected_quest[0]: ui.notify(pack_again(id)))
+        btn_delete.on_click(lambda id=selected_quest[0]: ui.notify(handle_delete_action(id)))
+        btn_complete.on_click(lambda id=selected_quest[0]: ui.notify(handle_complete_action(id)))
 
         if selected_quest[7] != "open":
             btn_edit.enabled = False
             btn_delete.enabled = False
             btn_complete.enabled = False
+        else:
+            btn_edit.enabled = True
+            btn_delete.enabled = True
+            btn_complete.enabled = True
+
+    def pack_again(id: int):
+        package = [None] * 7
+        package[0] = id
+        package[1] = "player"
+        package[2] = name_input.value
+        package[3] = description_input.value 
+        package[4] = difficulty_select.value
+        package[5] = start_date_picker.value
+        package[6] = due_date_picker.value
+        return editQuest(package)
 
     def handle_complete_action(id: int):
         complete_msg = complete_quest(id)
         return complete_msg
 
     def handle_delete_action(id: int):
+        quest_options_menu.remove(id)
         delete_msg = delete_quest(id)
         return delete_msg
 
@@ -261,7 +213,7 @@ def create_user_page():
     ui.label('Name:')
     name_input = ui.input('Enter username here')
 
-    ui.label('select image here:')
+    ui.label('select image here: (under construction)')
     image_data = {}
     ui.upload(on_upload=lambda e: image_data.update({"image": handle_upload(e)}), max_files=1)
 
@@ -292,68 +244,9 @@ def create_user_page():
     )
 )
 
-@ui.page('/edit_user')
-def edit_user():
-    ui.label('Your users:')
-    ButtonManager.buttons_showed = False
-
-    users = get_all_user()
-    user_options = []
-    user_options_menu = []
-
-    for user in users:
-        user_options.append(user)
-        user_id = user[0]
-        user_options_menu.append(user_id)
-
-    user_id = ui.select(
-        options=user_options_menu,
-        on_change=lambda e: on_select_change(user_id.value, ButtonManager.buttons_showed)
-    )
-
-    ui.label('Name:')
-    name_input = ui.input()
-
-    ui.label('Image Path:')
-    image_path_input = ui.input()
-
-    ui.label('Race:')
-    race_input = ui.select(
-        options=['Human', 'Elf', 'Gnome']
-    )
-
-    ui.label('Class:')
-    clas_input = ui.select(
-        options=['Knight', 'Healer', 'Fighter']
-    )
-
-    def on_select_change(selected_value, buttonbool: bool):
-        selected_user = next((user for user in user_options if user[0] == selected_value), None)
-        user_id = selected_user[0]
-        current_id = selected_user[0]
-        name_input.value = selected_user[1]
-        image_path_input.value = selected_user[2] if selected_user[2] else ""
-        race_input.value = selected_user[3] if selected_user[3] else "noRace"
-        clas_input.value = selected_user[4] if selected_user[4] else "noClass"
-
-        global btn_edit
-        global btn_delete
-
-        if not ButtonManager.buttons_showed:
-            btn_edit = ui.button("Save changes", on_click=lambda: ui.notify(update_user(
-                selected_user[0], name_input.value, image_path_input.value, race_input.value,
-                clas_input.value
-            )))
-            btn_delete = ui.button("Delete", on_click=lambda: ui.notify(delete_user(
-                selected_user[0]
-            )))
-            ButtonManager.buttons_showed = True
-
 @ui.page('/users_cockpit')
 def see_users_page():
     ui.label('Change user:')
-
-    ButtonManager.buttons_showed_player_cockpit = False
 
     users = get_all_user()
     user_options = []
@@ -368,56 +261,25 @@ def see_users_page():
         change_user(name)
         label_container.clear()
         with label_container:
-            ui.label(show_player_name_and_level())  
+            ui.label(show_player_name_and_level()) 
 
-    def on_select_change(event):
-        global user_name
-        user_name = event.value
-    
-        selected_player = next((user for user in user_options if user[1] == user_name), None)
+    for user in users:
+        user_name = user[1]
+        user_race = user[3]
+        user_clas = user[4]
+        user_level = user[5]
+        user_xp = user[6]
 
-        global btn_change_player
-        if not ButtonManager.buttons_showed_player_cockpit:
-            btn_change_player = ui.button("Save change", on_click=lambda: handle_user_change(selected_player[1]))
-            ui.label('The user information:')
-            users = get_all_user()
-
-            for user in users:
-                user_id = user[0]
-                user_name = user[1]
-                user_image_path = user[2]
-                user_race = user[3]
-                user_clas = user[4]
-                user_level = user[5]
-                user_xp = user[6]
-                user_active = user[7]
-
-                newtext = (
-                    f"""
-                id: {user_id},
-                name: {user_name},
-                image_path: {user_image_path}, 
-                race: {user_race}, 
-                clas: {user_clas},
-                level: {user_level}
-                xp: {user_xp},
-                active: {user_active},
-                """
-                )
-                ui.label(newtext)
-            ButtonManager.buttons_showed_player_cockpit = True
-
-        if ButtonManager.buttons_showed_player_cockpit:
-            btn_change_player.enabled = True
-
-        label_container.clear()
-        with label_container:
-            ui.label(show_player_name_and_level())
-
-    ui.select(
-        options=user_options_menu,
-        on_change=on_select_change
-    )     
+        ui.label(
+            f"""
+            NAME: {user_name},
+            RACE: {user_race}, 
+            CLASS: {user_clas},
+            LEVEL: {user_level},
+            XP: {user_xp}
+            """
+        )
+        ui.button(f"Make {user[1]} active", on_click=lambda user_name=user[1]: handle_user_change(user_name))
 
 #Main page interface:
 
