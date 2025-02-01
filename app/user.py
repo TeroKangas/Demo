@@ -17,8 +17,9 @@ class UserManager:
         self.conn.commit()
         print(f"User '{name}' wurde erstellt.")
 
-    def write_file():
-        return NotImplementedError
+    def convert_to_binary(filename):
+        with open(filename, "rb") as file:
+            return file.read()
     
     def updateUser(self, id, name=None, image_path=None, race=None, clas=None):    
         set_clause = []

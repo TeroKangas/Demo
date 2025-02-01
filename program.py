@@ -4,7 +4,7 @@ from nicegui import ui
 from app.utils import (
     create_quest, getAllCompletedQuests, deleteQuest, completeQuest,
     editQuest, create_user, update_user, get_all_user, delete_user,
-    changePlayer, getAllOpenQuests, get_js_code, getAllQuests, handle_upload
+    changePlayer, getAllOpenQuests, get_js_code, getAllQuests
 )
 from app.db.createTables import create_tables_if_needed
 
@@ -49,6 +49,20 @@ class ButtonManager:
             raise ValueError("_buttons_showed_player_cockpit must be a boolean value")
 
 # Auxilary methods: 
+
+def handle_upload(e):
+    uploaded_file = e.value
+    content_type = e.mime
+
+    if 'jpeg' in content_type:
+        extension = 'jpg'
+    else:
+        extension = 'png'
+
+    file_path = f"uploaded_image.{extension}"
+
+    with open(file_path, "wb") as file:
+        file.write(uploaded_file)
 
 def delete_quest(id: int):
     if id != 0:
@@ -262,8 +276,8 @@ def create_user_page():
     name_input = ui.input('Enter username here')
 
     ui.label('select image here:')
-    image_data = {}
-    ui.upload(on_upload=lambda e: image_data.update({"image": handle_upload(e)}), max_files=1)
+
+    my_image = ui.upload(on_upload= lambda:handle_upload)
 
     ui.label('Select Race:')
     race_input = ui.select(
@@ -287,7 +301,7 @@ def create_user_page():
             clas_input.value,
             level_input,
             xp_input,
-            image_data.get("image")
+            my_image
         )
     )
 )

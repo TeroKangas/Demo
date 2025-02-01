@@ -39,13 +39,6 @@ def get_js_code():
     }
     '''
 
-def handle_upload(event):
-    uploaded_file = event.files[0]
-    file_path = uploaded_file.path
-    # Read the image as binary
-    with open(file_path, 'rb') as f:
-        return f.read()
-
 def create_quest(name: str, description: str, difficulty: str, startDate: str, endDate: str):
     empty_fields = []
 
@@ -102,7 +95,7 @@ def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
     if id is not None and id > 0:
         if name != '' and desc != '':
             obj.editQuest(id, name, desc, diff, start_date, due_date)
-            ui.notify("Quest {name} edited")
+            ui.notify("Quest was edited.")
         else:
             ui.notify("Title and description must be given.")
 
@@ -130,6 +123,10 @@ def create_user(name: str, race: str, clas: str, level: int, xp: int, image_data
         is_active = 0
 
     image_path = "obsolet"
+
+    for user in users:
+        if user[1] == name:
+            return f"User {name} exists already!"
 
     obj_user.createUser(
         name=name,
