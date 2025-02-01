@@ -112,10 +112,10 @@ def completeQuest(id: int):
     obj.completeQuest(id)
     return f'Quest was completed successfully!'
 
-def editQuest(id: int, name: str, desc: str, diff: str, start_date, due_date):
-    if id is not None and id > 0:
-        if name != '' and desc != '':
-            obj.editQuest(id, name, desc, diff, start_date, due_date)
+def editQuest(quest):
+    if quest[0] is not None and quest[0] > 0:
+        if quest[2] != '' and quest[3] != '':
+            obj.editQuest(quest[0], quest[2], quest[3], quest[4], quest[5], quest[6])
             ui.notify("Quest {name} edited")
         else:
             ui.notify("Title and description must be given.")
