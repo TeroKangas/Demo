@@ -24,11 +24,7 @@ user_id = obj_user.get_active_user_id()
 obj = quest.QuestManager(db_path, user_id)
 obj_user = user.UserManager(db_path, user_id)
 obj_level = level.LevelSystem(db_path, user_id)
-user_id = obj_user.get_active_user_id()
 
-obj = quest.QuestManager(db_path, user_id)
-obj_user = user.UserManager(db_path, user_id)
-obj_level = level.LevelSystem(db_path, user_id)
 
 def get_js_code():
     return '''
@@ -106,11 +102,7 @@ def getAllCompletedQuests():
 
 def deleteQuest(id: int):
     obj.deleteQuest(id)
-    return f'Quest was deleted successfully!'
-
-def completeQuest(id: int):
-    obj.completeQuest(id)
-    return f'Quest was completed successfully!'
+    return f'Quest with {id} was deleted successfully!'
 
 def editQuest(quest):
     if quest[0] is not None and quest[0] > 0:
@@ -124,10 +116,12 @@ def completeQuest(id: int):
     howXp = obj.getHowMuchXp(id)
     if howXp:
         obj_level.add_xp(howXp)
+        obj.completeQuest(id)
+        return f'Quest with id {id} was completed succesfully!'
     else:
         obj_level.add_xp(2)
-        print("Quest hat keine definierte XP, Standardwert wird verwendet.")
-    obj.completeQuest(id)
+        obj.completeQuest(id)
+        return f'Quest {id} has no defined xp, 2 xp will be awarded'
 
 def changePlayer(name: str):
     obj_user.changePlayer(name)

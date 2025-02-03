@@ -28,11 +28,15 @@ class QuestManager:
 
     def getCompletedQuests(self):
         """Ruft alle erledigte Quests des Benutzers ab."""
-        currUserId = self.user_manager.get_active_user_id()
-        self.cursor.execute("SELECT * FROM quest WHERE user_id = ? AND status = 'completed'", (currUserId,))
-        quests = self.cursor.fetchall()
-        print(f"{len(quests)} completed Quests gefunden.")
-        return quests
+        self.cursor.execute('''
+            SELECT quest.* 
+            FROM quest
+            JOIN user
+            ON quest.user_id = user.id
+            WHERE quest.status = 'completed' AND user.is_active = 1; ''')
+        completed_quests = self.cursor.fetchall()
+        print(f"{len(completed_quests)} completed Quests found.")
+        return completed_quests
 
     def getOpenQuests(self):
         """Ruft alle offenen Quests des Benutzers ab."""
@@ -43,14 +47,15 @@ class QuestManager:
             ON quest.user_id = user.id
             WHERE quest.status = 'open' AND user.is_active = 1; ''')
         open_quests = self.cursor.fetchall()
-        print(f"{len(open_quests)} offene Quests gefunden.")
+        print(f"{len(open_quests)} open Quests found.")
         return open_quests
 
     def completeQuest(self, quest_id):
         """Markiert eine Quest als abgeschlossen."""
+        currUserId = self.user_manager.get_active_user_id()
         self.cursor.execute('''
             UPDATE quest SET status = 'completed' WHERE id = ? AND user_id = ?
-        ''', (quest_id, self.user_id))
+        ''', (quest_id, currUserId))
         if self.cursor.rowcount > 0:
             self.conn.commit()
             print(f"Quest mit ID {quest_id} abgeschlossen.")
@@ -59,7 +64,8 @@ class QuestManager:
 
     def deleteQuest(self, quest_id):
         """Löscht eine Quest aus der Datenbank."""
-        self.cursor.execute("DELETE FROM quest WHERE id = ? AND user_id = ?", (quest_id, self.user_id))
+        currUserId = self.user_manager.get_active_user_id()
+        self.cursor.execute("DELETE FROM quest WHERE id = ? AND user_id = ?", (quest_id, currUserId))
         if self.cursor.rowcount > 0:
             self.conn.commit()
             print(f"Quest mit ID {quest_id} wurde gelöscht.")
@@ -68,11 +74,12 @@ class QuestManager:
 
     def overdueQuests(self):
         """Ruft alle überfälligen Quests ab."""
+        currUserId = self.user_manager.get_active_user_id()
         current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cursor.execute('''
             SELECT * FROM quest
             WHERE user_id = ? AND status = 'open' AND due_date < ?
-        ''', (self.user_id, current_date))
+        ''', (currUserId, current_date))
         overdue = self.cursor.fetchall()
         print(f"{len(overdue)} überfällige Quests gefunden.")
         return overdue
