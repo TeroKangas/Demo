@@ -47,6 +47,26 @@ class LevelSystem:
             self.current_xp -= self.xp_per_level
             self.current_level += 1
             print(f"Level aufgestiegen! Aktuelles Level: {self.current_level}")
+        self.cursor.execute('''
+                    SELECT race 
+                    FROM user 
+                    WHERE is_active = 1;
+                ''')
+        result = self.cursor.fetchone()
+        if result:
+            if result[0] == "Easy":
+                return 2
+
+            elif result[0] == "Normal":
+                return 5
+
+            elif result[0] == "Hard":
+                return 10
+
+            else:
+                return None
+        else:
+            return None
 
     def get_current_state(self):
         return f"Level: {self.current_level}, XP: {self.current_xp}/{self.xp_per_level}"
