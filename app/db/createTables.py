@@ -29,7 +29,6 @@ def create_tables_if_needed():
             is_active INTEGER DEFAULT 0,
             FOREIGN KEY (picture_id) REFERENCES image(id)
         )
-        )
     ''')
 
     # Tabelle für Quests erstellen
@@ -51,7 +50,7 @@ def create_tables_if_needed():
             CREATE TABLE IF NOT EXISTS image (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 picture BLOB NOT NULL,
-                level int NOT NULL,
+                level int NOT NULL
             )  
         ''')
 
