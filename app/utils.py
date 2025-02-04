@@ -126,7 +126,7 @@ def completeQuest(id: int):
 def changePlayer(name: str):
     obj_user.changePlayer(name)
 
-def create_user(name: str, race: str, clas: str, level: int, xp: int, image_data):
+def create_user(name: str, race: str, clas: str, level: int, xp: int, picture_path: str):
     empty_fields = []
 
     for field_name, field_value in [("name", name), ("race", race), ("clas", clas)]:
@@ -134,7 +134,10 @@ def create_user(name: str, race: str, clas: str, level: int, xp: int, image_data
             empty_fields.append(field_name)
 
     if empty_fields:
-        return f"Error! Missing values for: {', '.join(empty_fields)}"
+        return f"Error! Missing values for: {', '.join(empty_fields)}."
+    
+    if picture_path == "":
+        return f"Error! No profile picture selected."
     
     users = get_all_user()
 
@@ -143,11 +146,9 @@ def create_user(name: str, race: str, clas: str, level: int, xp: int, image_data
     else:
         is_active = 0
 
-    image_path = "obsolet"
-
     obj_user.createUser(
         name=name,
-        image_path=image_path,
+        image_path=picture_path,
         race=race,
         clas=clas,
         level=level,

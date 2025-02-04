@@ -228,17 +228,20 @@ def create_user_page():
             with ui.column():
                 ui.image(path).style('width: 200px; height: 200px; border: 1px solid #ccc;')
 
+    global picture_path
     picture_path = ""
 
     def on_change(e):
-        if e == "Left pic":
-            return
-      
-        return
+        if e.value == "Left":
+            picture_path = "app/static/Cat03.jpg"
+        elif e.value == "Center":
+            picture_path = "app/static/cat_loafing.jpg"
+        elif e.value == "Right":
+            picture_path = "app/static/cat_water.png"
 
     ui.label("Choose your profile picture:")
-    rd_btn = ui.radio(
-    options=['Left pic', 'Center pic', 'Right pic'],
+    ui.radio(
+    options=['Left', 'Center', 'Right'],
     on_change=on_change
     )
 
@@ -264,6 +267,7 @@ def create_user_page():
             clas_input.value,
             level_input,
             xp_input,
+            picture_path
         )
     )
 )
