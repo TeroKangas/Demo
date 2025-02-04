@@ -10,14 +10,20 @@ Tero Kangas, Lucie Haas
 <br>
 
 ## Inhalte des Programms:
-1. Erstellen, bearbeiten, löschen, erledigen von ToDo’s (Quests)
+
+Das kann man machen:
+
+- Erstellen, bearbeiten, löschen, erledigen von ToDo’s (Quests)
+   - Name
    - Bezeichnung 
    - Schwierigkeitsgrad 
    - Datum von
    - Datum bis 
    - Status: offen & geschlossen
 
-2. Erstellen, bearbeiten, löschen von Usern:
+<br>
+
+- Erstellen, bearbeiten, löschen von Usern
    - Name  
    - Bild 
    - Rasse & Klasse
@@ -31,6 +37,24 @@ Tero Kangas, Lucie Haas
 Das Programm ist eine webbasierte Applikation, die mithilfe des Frameworks NiceGUI eine Benutzeroberfläche zur Verwaltung von "Quests" bereitstellt.
 Quests sind hier Aufgaben oder Ziele mit einem Titel, einer Beschreibung, einem Schwierigkeitsgrad und Start- sowie Enddaten.
 Als Datenbank wurde Sqllite verwendet. Steuerung von Öffnen und Schließen des Tabs in Browser übernimmt Javascript.
+
+<br>
+
+**Die Seiten & deren Funktionen:**
+
+*Create Quest:* Eine neue Quest erstellen
+<br>
+<br>
+*Open Quests:* In einem Dropdown-Menü aus einer Liste, welche alle Quests des aktuellen Users darstellt auswählen und diese ändern, löschen oder auf erledigt setzen
+<br>
+<br>
+*Closed Quests:* Eine Liste aller geschlossenen Quests des aktuellen Users
+<br>
+<br>
+*Create User:* Einen neuen User erstellen
+<br>
+<br>
+*Users Cockpit:* Den User wechseln
 
 <br>
 
