@@ -213,9 +213,8 @@ def create_user_page():
     ui.label('Name:')
     name_input = ui.input('Enter username here')
 
-    ui.label('select image here: (under construction)')
-    image_data = {}
-    ui.upload(on_upload=lambda e: image_data.update({"image": handle_upload(e)}), max_files=1)
+    
+
 
     ui.label('Select Race:')
     race_input = ui.select(
@@ -239,7 +238,6 @@ def create_user_page():
             clas_input.value,
             level_input,
             xp_input,
-            image_data.get("image")
         )
     )
 )
