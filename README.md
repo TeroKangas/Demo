@@ -11,7 +11,7 @@ Tero Kangas, Lucie Haas
 
 ## Inhalte des Programms:
 
-Das kann man machen:
+Dieses Programm kann:
 
 - Erstellen, bearbeiten, löschen, erledigen von ToDo’s (Quests)
    - Name
