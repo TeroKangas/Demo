@@ -91,6 +91,7 @@ Tero:
    - 210125-3
    - 210125-4
    - final_b
+   - last_one_tk
 
 Lucie:
    - structure
@@ -104,6 +105,8 @@ Lucie:
    - morePictures
    - levelRewards
    - quickChangesForMain
+   - evenMoreFixesForMain
+   - lastFixesForMain
 
 <br>
 
