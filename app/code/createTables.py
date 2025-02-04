@@ -26,9 +26,8 @@ def create_tables_if_needed():
             clas TEXT DEFAULT noClass, -- 'Knight', 'Healer', 'Fighter'
             level INTEGER DEFAULT 1,
             xp INTEGER DEFAULT 0,
-            is_active INTEGER DEFAULT 0,
-            FOREIGN KEY (picture_id) REFERENCES image(id)
-        )
+            is_active INTEGER DEFAULT 0
+        );
     ''')
 
     # Tabelle für Quests erstellen
@@ -45,14 +44,6 @@ def create_tables_if_needed():
             FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
         )  
     ''')
-
-    cursor.execute('''
-            CREATE TABLE IF NOT EXISTS image (
-                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                picture BLOB NOT NULL,
-                level int NOT NULL
-            )  
-        ''')
 
     # Änderungen speichern und Verbindung schließen
     conn.commit()

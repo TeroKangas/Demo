@@ -126,8 +126,7 @@ class UserManager:
             return picture_path
         
     def change_picture_path(self, picture_path: str):
-        user_id = self.getActiveUser()
-        self.cursor.execute("UPDATE user SET image_path = ? WHERE id = ?;", (picture_path, user_id[0]))
+        self.cursor.execute("UPDATE user SET image_path = ? WHERE is_active = 1;", (picture_path,))
         return "Image changed"
 
 
