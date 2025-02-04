@@ -25,7 +25,7 @@ Dieses Programm kann:
 
 - Erstellen, bearbeiten, löschen von Usern
    - Name  
-   - Bild 
+   - Bild
    - Rasse & Klasse
 
 <br>
@@ -54,7 +54,7 @@ Als Datenbank wurde SQLite verwendet. Die Steuerung vom öffnen und schließen e
 *Create User:* Einen neuen User erstellen
 <br>
 <br>
-*Users Cockpit:* Den User wechseln
+*Users Cockpit:* Den User wechseln, sowie das Profilbild ändern
 
 <br>
 
