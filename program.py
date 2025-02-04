@@ -213,8 +213,31 @@ def create_user_page():
     ui.label('Name:')
     name_input = ui.input('Enter username here')
 
-    
+    # Your image paths
+    image_paths = [
+        "app/static/Cat03.jpg",
+        "app/static/cat_loafing.jpg",
+        "app/static/cat_water.png"
+    ]
 
+    with ui.row():
+        for path in image_paths:
+            with ui.column():
+                ui.image(path).style('width: 200px; height: 200px; border: 1px solid #ccc;')
+
+    picture_path = ""
+
+    def on_change(e):
+        if e == "Left pic":
+            return
+      
+        return
+
+    ui.label("Choose your profile picture:")
+    rd_btn = ui.radio(
+    options=['Left pic', 'Center pic', 'Right pic'],
+    on_change=on_change
+    )
 
     ui.label('Select Race:')
     race_input = ui.select(
