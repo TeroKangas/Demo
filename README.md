@@ -30,7 +30,7 @@ Dieses Programm kann:
 
 <br>
 
-## Beschreibung des Programms & Start des Programmes
+## Beschreibung des Programmes
 
 ### Beschreibung
 
@@ -58,10 +58,19 @@ Als Datenbank wurde SQLite verwendet. Die Steuerung vom öffnen und schließen e
 
 <br>
 
-### Start des Programmes
+### Start des Programmes & andere Informationen
 
 Zum Start des Programmes bitte das Python-File "program", welches unter "demo" liegt, ausführen.
 
+Bitte nach jeder Aktion den aktuellen Tab reloaden.
+
+<br>
+
+### Belohnungen
+
+Die Belohnungen sind:
+   - ab Level 2: 3. Profilbild zum auswählen
+   - ab Level 5: 4. Profilbild zum auswählen
 
 <br>
 
