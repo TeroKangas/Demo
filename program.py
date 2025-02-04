@@ -193,13 +193,16 @@ def see_quests_page():
     quests = getAllCompletedQuests()
 
     for quest in quests:
+        quest_name = quest[2]
         quest_description = quest[3]
         quest_difficulty = quest[4]
         quest_start_date = quest[5]
         quest_due_date = quest[6]
 
         item = (
-        f"""Description: {quest_description},
+        f"""
+        Name: {quest_name},
+        Description: {quest_description},
         Difficulty: {quest_difficulty}, 
         Start date: {quest_start_date}, 
         Due date: {quest_due_date}

@@ -108,7 +108,7 @@ def editQuest(quest):
     if quest[0] is not None and quest[0] > 0:
         if quest[2] != '' and quest[3] != '':
             obj.editQuest(quest[0], quest[2], quest[3], quest[4], quest[5], quest[6])
-            ui.notify("Quest {name} edited")
+            ui.notify(f"Quest {quest[3]} edited")
         else:
             ui.notify("Title and description must be given.")
 
@@ -153,7 +153,6 @@ def create_user(name: str, race: str, clas: str, level: int, xp: int, image_data
         level=level,
         xp=xp,
         is_active=is_active,
-        image_data=image_data
     )
 
     return f'User "{name}" created successfully!'
