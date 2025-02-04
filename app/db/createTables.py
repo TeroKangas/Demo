@@ -22,8 +22,8 @@ def create_tables_if_needed():
             name TEXT NOT NULL,
             image_path TEXT,
             picture_id INTEGER,
-            race TEXT DEFAULT noRace,
-            clas TEXT DEFAULT noClass,
+            race TEXT DEFAULT noRace,  --'Human', 'Elf', 'Gnome'
+            clas TEXT DEFAULT noClass, -- 'Knight', 'Healer', 'Fighter'
             level INTEGER DEFAULT 1,
             xp INTEGER DEFAULT 0,
             is_active INTEGER DEFAULT 0,
