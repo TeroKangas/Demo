@@ -17,9 +17,6 @@ class UserManager:
         self.conn.commit()
         print(f"User '{name}' wurde erstellt.")
 
-    def write_file():
-        return NotImplementedError
-    
     def updateUser(self, id, name=None, image_path=None, race=None, clas=None):    
         set_clause = []
         params = []
@@ -111,14 +108,6 @@ class UserManager:
             self.conn.commit()
         else:
             return
-        
-    def getImagePath(self, player_id: int):
-        self.cursor.execute("SELECT image_path FROM user WHERE id = ?;", (player_id),)
-        picture_path = self.cursor.fetchone()
-        if picture_path is None:
-            return "no_user"
-        else:
-            return picture_path
     
     def getActiveUser(self):
         self.cursor.execute("SELECT id FROM user WHERE is_active = 1;")
@@ -127,6 +116,14 @@ class UserManager:
             return "no_user"
         else:
             return active_user_id
+        
+    def getImagePath(self, player_id: int):
+        self.cursor.execute("SELECT image_path FROM user WHERE id = ?;", (player_id),)
+        picture_path = self.cursor.fetchone()
+        if picture_path is None:
+            return "no_user"
+        else:
+            return picture_path
 
 
 
