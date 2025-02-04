@@ -118,7 +118,7 @@ class QuestManager:
             else:
                 return None
         else:
-            return None
+            return None      
 
     def closeConnection(self):
         """Schließt die Verbindung zur Datenbank."""

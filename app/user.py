@@ -12,7 +12,7 @@ class UserManager:
         """Erstellt einen neuen user"""
         self.cursor.execute('''
             INSERT INTO user (name, image_path, race, clas, level, xp, is_active)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (name, image_path, race, clas, level, xp, is_active))
         self.conn.commit()
         print(f"User '{name}' wurde erstellt.")
@@ -111,6 +111,22 @@ class UserManager:
             self.conn.commit()
         else:
             return
+        
+    def getImagePath(self, player_id: int):
+        self.cursor.execute("SELECT image_path FROM user WHERE id = ?;", (player_id),)
+        picture_path = self.cursor.fetchone()
+        if picture_path is None:
+            return "no_user"
+        else:
+            return picture_path
+    
+    def getActiveUser(self):
+        self.cursor.execute("SELECT id FROM user WHERE is_active = 1;")
+        active_user_id = self.cursor.fetchone()
+        if active_user_id is None:
+            return "no_user"
+        else:
+            return active_user_id
 
 
 

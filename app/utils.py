@@ -173,3 +173,11 @@ def update_user(id: int, name: str = None, image_path: str = None, race: str = N
 def activate_user(id: int):
     msg = obj_user.getAllUser()
     return msg
+
+def get_active_user_id():
+    active_user_id = obj_user.getActiveUser()
+    return active_user_id
+
+def get_image_path(player_id: int):
+    image_path = obj_user.getImagePath(player_id)
+    return image_path
