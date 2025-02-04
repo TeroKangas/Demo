@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta  
 from nicegui import ui                   
-
+from app.db.createTables import create_tables_if_needed
 from app.utils import (
     create_quest, getAllCompletedQuests, deleteQuest, completeQuest,
     editQuest, create_user, update_user, get_all_user, delete_user,
     changePlayer, getAllOpenQuests, get_js_code, getAllQuests, handle_upload
 )
-from app.db.createTables import create_tables_if_needed
 
 js_code = get_js_code()
 

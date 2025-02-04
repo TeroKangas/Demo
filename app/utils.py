@@ -1,16 +1,12 @@
-
-#some utils
-
 import os
 import sys
 import datetime
 from nicegui import ui
-
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 import quest
 import user
 import level
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 db_dir = 'db'
 db_path = os.path.join(db_dir, 'game.db')

@@ -1,6 +1,4 @@
 import sqlite3
-from datetime import datetime
-
 
 class UserManager:
     def __init__(self, db_path, user_id):
@@ -9,7 +7,6 @@ class UserManager:
         self.user_id = user_id
 
     def createUser(self, name, image_path, race, clas, level, xp, is_active):
-        """Erstellt einen neuen user"""
         self.cursor.execute('''
             INSERT INTO user (name, image_path, race, clas, level, xp, is_active)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -57,7 +54,6 @@ class UserManager:
             print(f"User mit ID {id} nicht gefunden oder keine Änderungen vorgenommen.")
 
     def getAllUser(self):
-        """Ruft alle Benutzer ab."""
         self.cursor.execute("SELECT * FROM user;")
         user = self.cursor.fetchall()
         print(f"{len(user)} User gefunden.")
@@ -72,7 +68,6 @@ class UserManager:
             return None
 
     def deleteUser(self, id):
-        """Löscht einen User aus der Datenbank."""
         self.cursor.execute("DELETE FROM user WHERE id = ?", (id,))
         if self.cursor.rowcount > 0:
             self.conn.commit()
