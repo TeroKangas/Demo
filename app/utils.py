@@ -1,6 +1,3 @@
-
-#some utils
-
 import os
 import sys
 import datetime
@@ -179,7 +176,6 @@ def get_image_path(player_id: int):
     return image_path
 
 def set_profile_image_size():
-    #evtl. dynamisch machen
     width = 100
     height = 100
     return width, height
@@ -206,4 +202,3 @@ def show_picture():
         path = path[0] if isinstance(path, tuple) else path
         filename = path.rsplit("/", 1)[-1]
         ui.image(source=f"app/static/{filename}").style(f"width: {width}px; height: {height}px; object-fit: cover;")
-    
