@@ -24,11 +24,20 @@ Tero Kangas, Lucie Haas
 
 <br>
 
-## Beschreibung des Programms
+## Beschreibung des Programms & Start des Programmes
+
+### Beschreibung
 
 Das Programm ist eine webbasierte Applikation, die mithilfe des Frameworks NiceGUI eine Benutzeroberfläche zur Verwaltung von "Quests" bereitstellt.
 Quests sind hier Aufgaben oder Ziele mit einem Titel, einer Beschreibung, einem Schwierigkeitsgrad und Start- sowie Enddaten.
 Als Datenbank wurde Sqllite verwendet. Steuerung von Öffnen und Schließen des Tabs in Browser übernimmt Javascript.
+
+<br>
+
+### Start des Programmes
+
+Zum Start des Programmes bitte das Python-File "program", welches unter "demo" liegt.
+
 
 <br>
 
