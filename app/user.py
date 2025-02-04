@@ -8,12 +8,12 @@ class UserManager:
         self.cursor = self.conn.cursor()
         self.user_id = user_id
 
-    def createUser(self, name, image_path, race, clas, level, xp, is_active, image_data):
+    def createUser(self, name, image_path, race, clas, level, xp, is_active):
         """Erstellt einen neuen user"""
         self.cursor.execute('''
-            INSERT INTO user (name, image_path, race, clas, level, xp, is_active, image)
+            INSERT INTO user (name, image_path, race, clas, level, xp, is_active)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (name, image_path, race, clas, level, xp, is_active, image_data))
+        ''', (name, image_path, race, clas, level, xp, is_active))
         self.conn.commit()
         print(f"User '{name}' wurde erstellt.")
 
