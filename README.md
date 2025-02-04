@@ -60,7 +60,7 @@ Als Datenbank wurde SQLite verwendet. Die Steuerung vom öffnen und schließen e
 
 ### Start des Programmes
 
-Zum Start des Programmes bitte das Python-File "program", welches unter "demo" liegt ausführen.
+Zum Start des Programmes bitte das Python-File "program", welches unter "demo" liegt, ausführen.
 
 
 <br>
