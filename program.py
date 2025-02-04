@@ -301,7 +301,6 @@ def see_users_page():
     options=pic_options,
     on_change=on_change
     )
-    #on_click(lambda id=selected_quest[0]: ui.notify(pack_again(id)))
     ui.button('Change picture', on_click=lambda: ui.notify(handle_picture_change()))
 
     ui.label('Change user:')

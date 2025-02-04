@@ -3,19 +3,15 @@ import os
 
 def create_tables_if_needed():
 
-    # Pfad zur SQLite-Datenbank im Ordner /db
     db_dir = 'db'
     db_path = os.path.join(db_dir, 'game.db')
 
-    # Prüfen, ob der Ordner /db existiert, und erstellen, falls nicht
     if not os.path.exists(db_dir):
         os.makedirs(db_dir)
 
-    # Verbindung zur SQLite-Datenbank herstellen
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    # Tabelle für User erstellen
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS user (
             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -30,7 +26,6 @@ def create_tables_if_needed():
         );
     ''')
 
-    # Tabelle für Quests erstellen
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS quest (
             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -45,6 +40,5 @@ def create_tables_if_needed():
         )  
     ''')
 
-    # Änderungen speichern und Verbindung schließen
     conn.commit()
     conn.close()

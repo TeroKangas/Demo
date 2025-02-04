@@ -1,8 +1,5 @@
 import sqlite3
-
 from nicegui import ui
-
-import user
 
 
 class LevelSystem:
@@ -15,7 +12,6 @@ class LevelSystem:
         self.current_level, self.current_xp = self.load_user_data()
 
     def load_user_data(self):
-        """Lädt das aktuelle Level und XP des Spielers aus der Datenbank."""
         self.cursor.execute("SELECT level, xp FROM user WHERE is_active = 1")
         result = self.cursor.fetchone()
 
@@ -27,7 +23,6 @@ class LevelSystem:
             return 1, 0  # Standardwerte: Level 1, 0 XP
 
     def save_user_data(self):
-        """Speichert das aktuelle Level und XP des Spielers in der Datenbank."""
         self.cursor.execute("UPDATE user SET level = ?, xp = ? WHERE is_active = 1",
                             (self.current_level, self.current_xp))
         self.conn.commit()
@@ -60,24 +55,4 @@ class LevelSystem:
         return f"Level: {self.current_level}, XP: {self.current_xp}/{self.xp_per_level}"
 
     def close_connection(self):
-        """Schließt die Verbindung zur Datenbank."""
         self.conn.close()
-
-
-# Beispielhafte Verwendung:
-#db_path = 'game.db'
-#user_id = 1
-
-# Levelsystem mit Verbindung zur Datenbank starten
-#user = LevelSystem(db_path, user_id)
-
-# XP hinzufügen und speichern
-#user.add_xp(2500)
-#print(user.get_current_state())  # Gibt den aktuellen Status zurück
-
-# Mehr XP hinzufügen
-#user.add_xp(5000)
-#print(user.get_current_state())
-
-# Verbindung zur Datenbank schließen
-#user.close_connection()
