@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta  
 from nicegui import ui                   
-
 from app.utils import (
     create_quest, getAllCompletedQuests, deleteQuest, completeQuest,
-    editQuest, create_user, update_user, get_all_user, delete_user,
-    changePlayer, getAllOpenQuests, get_js_code, getAllQuests, handle_upload, get_image_path, get_active_user_id
+    editQuest, create_user, get_all_user, change_user, getAllOpenQuests, 
+    get_js_code, show_picture, show_player_name_and_level
 )
 from app.db.createTables import create_tables_if_needed
+
+# JS engine:
 
 js_code = get_js_code()
 
@@ -14,8 +15,7 @@ ui.add_head_html(f'''
     <script>{js_code}</script>
 ''')
 
-#global variables
-player_label = None
+# Initializing methods for application:
 
 create_tables_if_needed()
 
@@ -36,30 +36,6 @@ def complete_quest(id: int):
         btn_delete.enabled = False
         btn_complete.enabled = False
         return complete_msg
-
-def change_user(name: str):
-    if name != '':
-        changePlayer(name)
-        ui.notify('Player changed')
-
-def show_player_name_and_level():
-    users = get_all_user()
-    if len(users) == 0:
-        return "Player: not selected"
-    else:  
-        for user in users:
-            abc = user
-            if abc[7] == 1: #if user is active
-                name = abc[1]
-                level = abc[5]
-                return f"Player name: {name} | Level: {level}"
-
-    return "No user is activated"
-
-def set_profile_image_size():
-    width = 75
-    height = 75
-    return width, height
 
 #Pages:
 
@@ -289,10 +265,12 @@ def see_users_page():
     def handle_user_change(name: str):
         change_user(name)
         label_container.clear()
+        picture_container.clear()
         with label_container:
             ui.label(show_player_name_and_level()) 
         with picture_container:
             show_picture()
+
     for user in users:
         user_name = user[1]
         user_race = user[3]
@@ -313,18 +291,6 @@ def see_users_page():
 
 #Main page interface:
 
-def show_picture():
-    picture_container.clear()
-    width, height = set_profile_image_size()
-    active_user_id = get_active_user_id()
-    if active_user_id != "no_user":
-        path = get_image_path(active_user_id)
-        path = path[0] if isinstance(path, tuple) else path
-        filename = path.rsplit("/", 1)[-1]
-        ui.image(source=f"app/static/{filename}").style(f"width: {width}px; height: {height}px; object-fit: cover;")
-    else:
-        ui.image("no_image")
-
 with ui.row() as label_container:
     player_label = ui.label(show_player_name_and_level())
 with ui.row() as picture_container:
@@ -337,4 +303,5 @@ ui.button('Create user', on_click=lambda: ui.run_javascript('openOrFocusTab("/cr
 ui.button('Users cockpit', on_click=lambda: ui.run_javascript('openOrFocusTab("/users_cockpit")'))
 
 # Run the app command:
+
 ui.run()
