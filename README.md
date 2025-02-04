@@ -2,6 +2,8 @@
 
 ## Mitglieder
 
+@TeroKangas
+
 Tero Kangas, Lucie Haas
 
 ## Inhalte des Programms:
