@@ -60,17 +60,19 @@ Als Datenbank wurde SQLite verwendet. Die Steuerung vom öffnen und schließen e
 
 ### Start des Programmes & andere Informationen
 
-Zum Start des Programmes bitte das Python-File "program", welches unter "demo" liegt, ausführen.
+- Zum Start des Programmes bitte das Python-File "program", welches unter "demo" liegt, ausführen.
 
-Bitte nach jeder Aktion den aktuellen Tab reloaden.
+- Bitte nach jeder Aktion den aktuellen Tab reloaden.
+
+- Nach einer Weile Inaktivität "lockt" sich die Datenbank, in diesem Fall einfach "program" beenden und erneut starten.
 
 <br>
 
 ### Belohnungen
 
 Die Belohnungen sind:
-   - ab Level 2: 3. Profilbild zum auswählen
-   - ab Level 5: 4. Profilbild zum auswählen
+   - ab Level 3: 3. Profilbild zum auswählen
+   - ab Level 6: 4. Profilbild zum auswählen
 
 <br>
 
