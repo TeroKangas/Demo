@@ -7,7 +7,7 @@ from app.utils import (
 )
 from app.db.createTables import create_tables_if_needed
 
-# JS engine:
+# Js engine:
 
 js_code = get_js_code()
 
