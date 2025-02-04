@@ -2,7 +2,7 @@
 
 ## Mitglieder
 
-Klasse E2FI1
+Klasse: E2FI1
 <br>
 <br>
 Tero Kangas, Lucie Haas
@@ -61,8 +61,34 @@ Lucie:
    - levelRewards
    - quickChangesForMain
 
+<br>
+
 ### Aufgaben
 
+Für mehr Informationen hierzu kann man bei Nutzung von PyCharm die Autoren der jeweiligen Abschnitte rechts neben diesen anschauen.
 
+
+Tero:
+   - einige Funktionen der Klassen für Datenbankinteraktion
+     - level.py
+     - quest.py
+     - user.py
+   - Erstellung des "utils" Files und dessen Inhalte
+   - Implementierung von nicegui
+   - "program" File und dessen Inhalte
+
+<br>
+<br>
+
+Lucie:
+   - generelle Struktur
+   - die sqlite Tables
+   - die meisten Funktionen der Files für Datenbankinteraktion
+     - level.py
+     - quest.py
+     - user.py
+   - Initiale Erstellung und Funktion der "create_user_page" in "program"
+   - kleine Fixes im "program" File
+ 
 
 
