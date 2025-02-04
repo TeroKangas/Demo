@@ -1,11 +1,14 @@
 from datetime import datetime, timedelta  
-from nicegui import ui                   
+from nicegui import ui
+
+from app.code.createTables import create_tables_if_needed
+create_tables_if_needed()
+
 from app.utils import (
     create_quest, getAllCompletedQuests, deleteQuest, completeQuest,
     editQuest, create_user, get_all_user, change_user, getAllOpenQuests, 
     get_js_code, show_picture, show_player_name_and_level, change_picture
 )
-from app.db.createTables import create_tables_if_needed
 
 # Js engine:
 
@@ -14,10 +17,6 @@ js_code = get_js_code()
 ui.add_head_html(f'''
     <script>{js_code}</script>
 ''')
-
-# Initializing methods for application:
-
-create_tables_if_needed()
 
 # Auxilary methods: 
 
@@ -264,16 +263,16 @@ def see_users_page():
     global user_level
 
     for user in users:
-        if user[7] == 1:
+        if user[8] == 1:
             global user_level
-            user_level = user[5]
+            user_level = user[6]
 
     if user_level > 2:
         image_paths.append("app/static/car.png")
         pic_options.append("4")
 
     if user_level > 5:
-        image_paths.append("app/static/carcar.jpg")
+        image_paths.append("app/static/CARJPG.jpg")
         pic_options.append("5")
 
     global change_picture_path
@@ -295,7 +294,7 @@ def see_users_page():
         elif e.value == "4":
             change_picture_path = "app/static/car.png"
         elif e.value == "5":
-            change_picture_path = "app/static/carcar.jpg"
+            change_picture_path = "app/static/CARJPG.jpg"
 
     ui.label("Change your profile picture:")
     ui.radio(
@@ -334,10 +333,10 @@ def see_users_page():
 
     for user in users:
         user_name = user[1]
-        user_race = user[3]
-        user_clas = user[4]
-        user_level = user[5]
-        user_xp = user[6]
+        user_race = user[4]
+        user_clas = user[5]
+        user_level = user[6]
+        user_xp = user[7]
 
         ui.label(
             f"""

@@ -191,10 +191,10 @@ def show_player_name_and_level():
     else:  
         for user in users:
             abc = user
-            if abc[7] == 1: #if user is active
+            if abc[8] == 1: #if user is active
                 name = abc[1]
-                level = abc[5]
-                return f"Player name: {name} | Level: {level}"
+                levelDisplayed = abc[6]
+                return f"Player name: {name} | Level: {levelDisplayed}"
 
     return "No user is activated"
 
