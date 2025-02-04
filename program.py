@@ -4,7 +4,7 @@ from nicegui import ui
 from app.utils import (
     create_quest, getAllCompletedQuests, deleteQuest, completeQuest,
     editQuest, create_user, update_user, get_all_user, delete_user,
-    changePlayer, getAllOpenQuests, get_js_code, getAllQuests, handle_upload
+    changePlayer, getAllOpenQuests, get_js_code, getAllQuests, handle_upload, get_image_path, get_active_user_id
 )
 from app.db.createTables import create_tables_if_needed
 
@@ -222,23 +222,27 @@ def create_user_page():
         "app/static/cat_loafing.jpg",
         "app/static/cat_water.png"
     ]
+    
+    global picture_path
+    picture_path = ""
 
     with ui.row():
         for path in image_paths:
             with ui.column():
                 ui.image(path).style('width: 200px; height: 200px; border: 1px solid #ccc;')
 
-    picture_path = ""
-
     def on_change(e):
-        if e == "Left pic":
-            return
-      
-        return
-
+        global picture_path
+        if e.value == "Left":
+            picture_path = 'app/static/Cat03.jpg'
+        elif e.value == "Center":
+            picture_path = "app/static/cat_loafing.jpg"
+        elif e.value == "Right":
+            picture_path = "app/static/cat_water.png"
+        
     ui.label("Choose your profile picture:")
-    rd_btn = ui.radio(
-    options=['Left pic', 'Center pic', 'Right pic'],
+    ui.radio(
+    options=['Left', 'Center', 'Right'],
     on_change=on_change
     )
 
@@ -256,7 +260,7 @@ def create_user_page():
     xp_input = 0
 
     ui.button(
-    'Create User',
+    'Create User', 
     on_click=lambda: ui.notify(
         create_user(
             name_input.value,
@@ -264,6 +268,7 @@ def create_user_page():
             clas_input.value,
             level_input,
             xp_input,
+            picture_path
         )
     )
 )
@@ -286,7 +291,8 @@ def see_users_page():
         label_container.clear()
         with label_container:
             ui.label(show_player_name_and_level()) 
-
+        with picture_container:
+            show_picture()
     for user in users:
         user_name = user[1]
         user_race = user[3]
@@ -299,7 +305,7 @@ def see_users_page():
             NAME: {user_name},
             RACE: {user_race}, 
             CLASS: {user_clas},
-            LEVEL: {user_level},
+            LEVEL: {user_level}, 
             XP: {user_xp}
             """
         )
@@ -307,11 +313,22 @@ def see_users_page():
 
 #Main page interface:
 
+def show_picture():
+    picture_container.clear()
+    width, height = set_profile_image_size()
+    active_user_id = get_active_user_id()
+    if active_user_id != "no_user":
+        path = get_image_path(active_user_id)
+        path = path[0] if isinstance(path, tuple) else path
+        filename = path.rsplit("/", 1)[-1]
+        ui.image(source=f"app/static/{filename}").style(f"width: {width}px; height: {height}px; object-fit: cover;")
+    else:
+        ui.image("no_image")
+
 with ui.row() as label_container:
     player_label = ui.label(show_player_name_and_level())
-with ui.row():
-    width, height = set_profile_image_size()
-    ui.image(source="app/static/Cat03.jpg").style(f"width: {width}px; height: {height}px; object-fit: cover;")
+with ui.row() as picture_container:
+    picture_box = show_picture()
 
 ui.button('Create quest', on_click=lambda: ui.run_javascript('openOrFocusTab("/create_quest_page")'))
 ui.button('Open quests', on_click=lambda: ui.run_javascript('openOrFocusTab("/open_quests_page")'))
