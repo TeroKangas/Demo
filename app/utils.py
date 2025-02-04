@@ -170,6 +170,10 @@ def change_user(name: str):
         changePlayer(name)
         ui.notify('Player changed')
 
+def change_picture(path: str):
+    msg = obj_user.change_picture_path(path)
+    return msg
+
 def get_image_path(player_id: int):
     image_path = obj_user.getImagePath(player_id)
     return image_path

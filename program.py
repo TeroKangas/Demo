@@ -3,7 +3,7 @@ from nicegui import ui
 from app.utils import (
     create_quest, getAllCompletedQuests, deleteQuest, completeQuest,
     editQuest, create_user, get_all_user, change_user, getAllOpenQuests, 
-    get_js_code, show_picture, show_player_name_and_level
+    get_js_code, show_picture, show_player_name_and_level, change_picture
 )
 from app.db.createTables import create_tables_if_needed
 
@@ -192,7 +192,6 @@ def create_user_page():
     ui.label('Name:')
     name_input = ui.input('Enter username here')
 
-    # Your image paths
     image_paths = [
         "app/static/Cat03.jpg",
         "app/static/cat_loafing.jpg",
@@ -251,6 +250,61 @@ def create_user_page():
 
 @ui.page('/users_cockpit')
 def see_users_page():
+    ui.label("Unlocked images:")
+
+    image_paths = [
+        "app/static/Cat03.jpg",
+        "app/static/cat_loafing.jpg",
+        "app/static/cat_water.png"
+    ]
+
+    pic_options = ["1", "2", "3"]
+
+    users = get_all_user()
+    global user_level
+
+    for user in users:
+        if user[7] == 1:
+            global user_level
+            user_level = user[5]
+
+    if user_level > 2:
+        image_paths.append("app/static/car.png")
+        pic_options.append("4")
+
+    if user_level > 5:
+        image_paths.append("app/static/carcar.jpg")
+        pic_options.append("5")
+
+    global change_picture_path
+    change_picture_path = ""
+
+    with ui.row():
+        for path in image_paths:
+            with ui.column():
+                ui.image(path).style('width: 200px; height: 200px; border: 1px solid #ccc;')
+
+    def on_change(e):
+        global change_picture_path
+        if e.value == "1":
+            change_picture_path = 'app/static/Cat03.jpg'
+        elif e.value == "2":
+            change_picture_path = "app/static/cat_loafing.jpg"
+        elif e.value == "3":
+            change_picture_path = "app/static/cat_water.png"
+        elif e.value == "4":
+            change_picture_path = "app/static/car.png"
+        elif e.value == "5":
+            change_picture_path = "app/static/carcar.jpg"
+
+    ui.label("Change your profile picture:")
+    ui.radio(
+    options=pic_options,
+    on_change=on_change
+    )
+    #on_click(lambda id=selected_quest[0]: ui.notify(pack_again(id)))
+    ui.button('Change picture', on_click=lambda: ui.notify(handle_picture_change()))
+
     ui.label('Change user:')
 
     users = get_all_user()
@@ -270,6 +324,13 @@ def see_users_page():
             ui.label(show_player_name_and_level()) 
         with picture_container:
             show_picture()
+
+    def handle_picture_change():
+        msg = change_picture(change_picture_path)
+        picture_container.clear()
+        with picture_container:
+            show_picture()
+        return msg
 
     for user in users:
         user_name = user[1]
