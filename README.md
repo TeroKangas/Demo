@@ -35,8 +35,8 @@ Das kann man machen:
 ### Beschreibung
 
 Das Programm ist eine webbasierte Applikation, die mithilfe des Frameworks NiceGUI eine Benutzeroberfläche zur Verwaltung von "Quests" bereitstellt.
-Quests sind hier Aufgaben oder Ziele mit einem Titel, einer Beschreibung, einem Schwierigkeitsgrad und Start- sowie Enddaten.
-Als Datenbank wurde Sqllite verwendet. Steuerung von Öffnen und Schließen des Tabs in Browser übernimmt Javascript.
+Quests sind hier Aufgaben oder Ziele mit einem Titel, einer Beschreibung, einem Schwierigkeitsgrad und Start- sowie Enddatum.
+Als Datenbank wurde SQLite verwendet. Die Steuerung vom öffnen und schließen eines Tabs im Browser übernimmt Javascript.
 
 <br>
 
@@ -60,7 +60,7 @@ Als Datenbank wurde Sqllite verwendet. Steuerung von Öffnen und Schließen des 
 
 ### Start des Programmes
 
-Zum Start des Programmes bitte das Python-File "program", welches unter "demo" liegt.
+Zum Start des Programmes bitte das Python-File "program", welches unter "demo" liegt ausführen.
 
 
 <br>
